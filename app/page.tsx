@@ -1,20 +1,21 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useRef, useLayoutEffect } from "react"
+import Link from "next/link"
 import { AppShell } from "@/components/app-shell"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { CalendarDays, ChevronDown, ArrowRight, Route, MessageSquare } from "lucide-react"
+import { CalendarDays, ChevronDown, ArrowRight, Route, MessageSquare, TrendingUp, Zap } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 // ─── Mock data ────────────────────────────────────────────────────────────────
 
 const modelExpenses = [
-  { name: "GPT-4o",        amount: "1 250.00 ₽", pct: 43, color: "bg-chart-1" },
-  { name: "Claude 3.5",    amount: "1 250.00 ₽", pct: 43, color: "bg-chart-2" },
-  { name: "Gemini 1.5",    amount: "1 250.00 ₽", pct: 43, color: "bg-chart-3" },
-  { name: "Mistral Large", amount: "1 250.00 ₽", pct: 43, color: "bg-chart-4" },
-  { name: "LLaMA 3",       amount: "1 250.00 ₽", pct: 43, color: "bg-chart-5" },
+  { name: "GPT-4o",        amount: "1 820 ₽", pct: 43, color: "oklch(0.811 0.111 293.571)" },
+  { name: "Claude 3.5",    amount: "1 100 ₽", pct: 26, color: "oklch(0.606 0.25 292.717)"  },
+  { name: "Gemini 1.5",    amount:   "680 ₽", pct: 16, color: "oklch(0.75 0.14 180)"       },
+  { name: "Mistral Large", amount:   "430 ₽", pct: 10, color: "oklch(0.78 0.14 350)"       },
+  { name: "LLaMA 3",       amount:   "220 ₽", pct:  5, color: "oklch(0.78 0.12 60)"        },
 ]
 
 const aiLog = [
@@ -51,28 +52,35 @@ function Sparkline() {
 // ─── Donut Chart ──────────────────────────────────────────────────────────────
 
 function DonutChart() {
-  const size = 100, cx = 50, cy = 50, r = 38, sw = 14
+  const cx = 50, cy = 50, r = 36, sw = 10
   const circ = 2 * Math.PI * r
-  const segments = [
-    { pct: 0.43, color: "oklch(0.606 0.25 292.717)" },
-    { pct: 0.43, color: "oklch(0.811 0.111 293.571)" },
-    { pct: 0.07, color: "oklch(0.85 0.1 180)" },
-    { pct: 0.07, color: "oklch(0.8 0.15 350)" },
-  ]
+  const gap = 0.018
   let offset = 0
   return (
-    <svg viewBox={`0 0 ${size} ${size}`} className="w-24 h-24 -rotate-90">
-      {segments.map((seg, i) => {
-        const dash = (seg.pct - 0.02) * circ
-        const sdo = -offset * circ
-        offset += seg.pct
-        return (
-          <circle key={i} cx={cx} cy={cy} r={r} fill="none" stroke={seg.color}
-            strokeWidth={sw} strokeDasharray={`${dash} ${circ - dash}`}
-            strokeDashoffset={sdo} strokeLinecap="round" />
-        )
-      })}
-    </svg>
+    <div className="relative shrink-0 w-[108px] h-[108px]">
+      <svg viewBox="0 0 100 100" className="w-full h-full -rotate-90">
+        {/* Track */}
+        <circle cx={cx} cy={cy} r={r} fill="none" stroke="white" strokeOpacity="0.06" strokeWidth={sw} />
+        {/* Segments */}
+        {modelExpenses.map((m, i) => {
+          const pct = m.pct / 100
+          const dash = (pct - gap) * circ
+          const sdo = -offset * circ
+          offset += pct
+          return (
+            <circle key={i} cx={cx} cy={cy} r={r} fill="none"
+              stroke={m.color} strokeWidth={sw}
+              strokeDasharray={`${dash} ${circ - dash}`}
+              strokeDashoffset={sdo} strokeLinecap="round" />
+          )
+        })}
+      </svg>
+      {/* Center label */}
+      <div className="absolute inset-0 flex flex-col items-center justify-center gap-0.5">
+        <span className="text-[10px] text-muted-foreground leading-none">Итого</span>
+        <span className="text-sm font-semibold font-mono leading-none">4 250 ₽</span>
+      </div>
+    </div>
   )
 }
 
@@ -87,31 +95,44 @@ function FilterButton({ children, icon }: { children: React.ReactNode; icon?: Re
   )
 }
 
-function FeatureCard({ icon: Icon, title, description, features }: {
-  icon: React.ElementType; title: string; description: string; features: string[]
-}) {
+function CheckIcon({ color }: { color: string }) {
   return (
-    <Card className="bg-transparent border-border/60 py-0">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="shrink-0">
+      <path fillRule="evenodd" clipRule="evenodd" d="M17.7993 7.90984C18.1898 8.30036 18.1898 8.93353 17.7993 9.32405L11.533 15.5903C11.1425 15.9808 10.5093 15.9808 10.1188 15.5903L6.70085 12.1723C6.31033 11.7818 6.31033 11.1487 6.70085 10.7581C7.09138 10.3676 7.72454 10.3676 8.11507 10.7581L10.8259 13.469L16.3851 7.90984C16.7756 7.51931 17.4087 7.51931 17.7993 7.90984Z" fill={color}/>
+    </svg>
+  )
+}
+
+function FeatureCard({ icon: Icon, title, description, features, accent, href }: {
+  icon: React.ElementType; title: string; description: string; features: string[]; accent?: string; href: string
+}) {
+  const color  = accent ?? "var(--primary)"
+  const bgRgba = `color-mix(in srgb, ${color} 13%, transparent)`
+
+  return (
+    <Card className="bg-background dark:bg-transparent border-border/60 py-0">
       <CardContent className="p-6 flex flex-col gap-4">
         <div className="flex items-start gap-4">
-          <div className="rounded-xl bg-primary/15 p-2.5 shrink-0">
-            <Icon className="size-5 text-primary" />
+          <div className="rounded-xl p-2.5 shrink-0" style={{ backgroundColor: bgRgba }}>
+            <Icon className="size-5" style={{ color }} />
           </div>
           <div className="flex flex-col gap-1">
             <h3 className="font-semibold text-foreground">{title}</h3>
             <p className="text-sm text-muted-foreground">{description}</p>
           </div>
         </div>
-        <ul className="flex flex-col gap-1.5">
-          {features.map((f) => (
-            <li key={f} className="flex items-center gap-2 text-sm text-muted-foreground">
-              <span className="text-primary text-xs">✓</span>{f}
-            </li>
-          ))}
-        </ul>
-        <Button variant="secondary" className="w-full mt-auto gap-2">
-          Перейти <ArrowRight className="size-4" />
-        </Button>
+        <div className="flex flex-col gap-4 pl-14">
+          <ul className="flex flex-col gap-1.5">
+            {features.map((f) => (
+              <li key={f} className="flex items-center gap-2 text-sm text-muted-foreground">
+                <CheckIcon color={color} />{f}
+              </li>
+            ))}
+          </ul>
+          <Button variant="secondary" className="w-full gap-2" asChild>
+            <Link href={href}>Перейти <ArrowRight className="size-4" /></Link>
+          </Button>
+        </div>
       </CardContent>
     </Card>
   )
@@ -132,11 +153,23 @@ const rubData    = [320, 510, 420, 680, 590, 870, 760, 1020, 940, 1150, 980, 134
 const tokenData  = [2.1, 3.4, 2.8, 4.5, 3.9, 5.8, 5.1,  6.8,  6.3,  7.7,  6.6,  8.9,  7.9,  9.7]
 const chartDays  = ["14 апр","15","16","17","18","19","20","21","22","23","24","25","26","27 апр"]
 
-function SpendingChart({ mode }: { mode: "rub" | "tokens" }) {
+function SpendingChart({ mode, fill }: { mode: "rub" | "tokens"; fill?: boolean }) {
   const [hoverIdx, setHoverIdx] = useState<number | null>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
+  const [W, setW] = useState(600)
+  const [H, setH] = useState(140)
+
+  useLayoutEffect(() => {
+    if (!containerRef.current) return
+    const ro = new ResizeObserver(([e]) => {
+      setW(e.contentRect.width)
+      if (fill) setH(e.contentRect.height)
+    })
+    ro.observe(containerRef.current)
+    return () => ro.disconnect()
+  }, [fill])
 
   const data = mode === "rub" ? rubData : tokenData
-  const W = 560, H = 140
   const pL = 48, pR = 12, pT = 10, pB = 24
   const cW = W - pL - pR, cH = H - pT - pB
 
@@ -154,16 +187,17 @@ function SpendingChart({ mode }: { mode: "rub" | "tokens" }) {
       ? v >= 1000 ? `${(v / 1000).toFixed(1)}K` : Math.round(v).toString()
       : v.toFixed(1)
 
-  const hovered = hoverIdx !== null ? data[hoverIdx] : null
   const hoveredLabel = hoverIdx !== null
     ? mode === "rub" ? `${data[hoverIdx].toLocaleString("ru")} ₽` : `${data[hoverIdx]} M`
     : null
 
   return (
-    <div className="relative w-full select-none" style={{ height: H }}>
+    <div ref={containerRef} className="relative w-full select-none pb-6" style={fill ? { height: "100%" } : { height: H + 24 }}>
       <svg
         viewBox={`0 0 ${W} ${H}`}
-        className="w-full h-full"
+        width={W}
+        height={H}
+        className="w-full"
         onMouseLeave={() => setHoverIdx(null)}
       >
         <defs>
@@ -245,8 +279,8 @@ function StatsRow() {
   return (
     <div className="grid grid-cols-3 gap-4">
       {/* Расход — 2/3 */}
-      <Card className="col-span-2 bg-transparent border-border/60 py-0">
-        <CardContent className="pt-5 px-5 pb-0 flex flex-col gap-3">
+      <Card className="col-span-2 bg-background dark:bg-transparent border-border/60 py-0 gap-0 flex flex-col">
+        <div className="px-6 pt-6 pb-3 flex flex-col gap-3 shrink-0">
           <div className="flex items-center justify-between">
             <p className="text-sm text-muted-foreground">Расход</p>
             <div className="flex items-center rounded-lg bg-muted/40 p-0.5 gap-0.5">
@@ -266,22 +300,42 @@ function StatsRow() {
               ))}
             </div>
           </div>
-          <p className="text-3xl font-semibold tracking-tight">
+          <p className="text-3xl font-semibold tracking-tight mb-3">
             {mode === "rub" ? "4 250.00 ₽" : "28.5 M"}
           </p>
-          <div className="-mx-5">
-            <SpendingChart mode={mode} />
-          </div>
-        </CardContent>
+        </div>
+        <div className="flex-1 min-h-0 px-0 pb-4">
+          <SpendingChart mode={mode} fill />
+        </div>
       </Card>
 
       {/* Баланс — 1/3 */}
-      <Card className="bg-transparent border-border/60 py-0">
-        <CardContent className="p-5 flex flex-col gap-3">
-          <p className="text-sm text-muted-foreground">Баланс</p>
-          <p className="text-3xl font-semibold tracking-tight">2 450 ₽</p>
-          <Button className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-medium">
-            Пополнить
+      <Card className="bg-background dark:bg-transparent border-border/60 py-0">
+        <CardContent className="p-6 flex flex-col gap-5">
+          {/* Основной баланс */}
+          <div className="flex flex-col gap-1">
+            <p className="text-sm text-muted-foreground">Баланс</p>
+            <p className="text-3xl font-semibold tracking-tight mb-3">2 450 ₽</p>
+          </div>
+
+          {/* Статы */}
+          <div className="flex flex-col gap-2">
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-muted-foreground">Потрачено в апреле</span>
+              <span className="font-mono font-medium">4 250 ₽</span>
+            </div>
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-muted-foreground">Ср. расход / день</span>
+              <span className="font-mono font-medium">155 ₽</span>
+            </div>
+            <div className="flex items-center justify-between text-sm pt-1 border-t border-border/50">
+              <span className="text-muted-foreground">Прогноз остатка</span>
+              <span className="font-mono font-medium text-amber-600 dark:text-amber-400">~15 дней</span>
+            </div>
+          </div>
+
+          <Button size="lg" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-medium">
+            Пополнить баланс
           </Button>
         </CardContent>
       </Card>
@@ -311,39 +365,44 @@ export default function DashboardPage() {
         <div className="grid grid-cols-2 gap-4">
           <FeatureCard icon={Route} title="AI Gateway"
             description="Единый API для работы с 50+ моделями от ведущих провайдеров"
-            features={["OpenAI, Antropic, Google, Mistral и другие", "Единый биллинг и лимиты", "Кэширование и балансировка"]} />
-          <FeatureCard icon={MessageSquare} title="Песочница"
+            features={["OpenAI, Antropic, Google, Mistral и другие", "Единый биллинг и лимиты", "Кэширование и балансировка"]}
+            href="/ai-gateway" />
+          <FeatureCard icon={MessageSquare} title="LLM-плейграунд"
             description="Общайтесь и тестируйте разные модели в одном месте"
-            features={["OpenAI, Antropic, Google, Mistral и другие", "Сравнение ответов моделей", "История чатов и промптов"]} />
+            features={["OpenAI, Antropic, Google, Mistral и другие", "Сравнение ответов моделей", "История чатов и промптов"]}
+            accent="#D36395"
+            href="/chat" />
         </div>
 
         {/* Bottom row */}
         <div className="grid grid-cols-2 gap-4">
-          <Card className="bg-transparent border-border/60 py-0">
-            <CardContent className="p-5">
-              <p className="text-sm font-medium mb-4">Расходы по моделям</p>
-              <div className="flex items-center gap-5">
-                <DonutChart />
-                <div className="flex flex-col gap-2 flex-1 min-w-0">
-                  {modelExpenses.map((m) => (
-                    <div key={m.name} className="flex items-center justify-between gap-2 text-sm">
+          <Card className="bg-background dark:bg-transparent border-border/60 py-0">
+            <CardContent className="p-6 flex flex-col gap-4">
+              <p className="text-sm font-medium">Расходы по моделям</p>
+              <div className="flex flex-col gap-3">
+                {modelExpenses.map((m) => (
+                  <div key={m.name} className="flex flex-col gap-1.5">
+                    <div className="flex items-center justify-between gap-2">
                       <div className="flex items-center gap-2 min-w-0">
-                        <span className={cn("size-2.5 rounded-full shrink-0", m.color)} />
-                        <span className="text-muted-foreground truncate">{m.name}</span>
+                        <span className="size-1.5 rounded-full shrink-0" style={{ background: m.color }} />
+                        <span className="text-sm text-foreground truncate">{m.name}</span>
                       </div>
-                      <div className="flex items-center gap-2 shrink-0 text-muted-foreground">
-                        <span className="font-mono text-xs">{m.amount}</span>
-                        <span className="text-xs opacity-60">{m.pct}%</span>
+                      <div className="flex items-center gap-2 shrink-0">
+                        <span className="font-mono text-xs text-muted-foreground">{m.amount}</span>
+                        <span className="text-xs text-muted-foreground/50 w-7 text-right">{m.pct}%</span>
                       </div>
                     </div>
-                  ))}
-                </div>
+                    <div className="h-1 rounded-full bg-white/6 overflow-hidden">
+                      <div className="h-full rounded-full" style={{ width: `${m.pct}%`, background: m.color }} />
+                    </div>
+                  </div>
+                ))}
               </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-transparent border-border/60 py-0">
-            <CardContent className="p-5">
+          <Card className="bg-background dark:bg-transparent border-border/60 py-0">
+            <CardContent className="p-6">
               <div className="flex items-center justify-between mb-4">
                 <p className="text-sm font-medium">AI-лог</p>
                 <div className="flex items-center gap-1.5">

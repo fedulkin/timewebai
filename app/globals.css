@@ -5,13 +5,13 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-    --surface-bg: #121214;
-    --tertiary: #16161A;
+    --sandbox-accent: #D36395;
 }
 
 @theme inline {
     --color-surface-bg: var(--surface-bg);
     --color-tertiary: var(--tertiary);
+    --color-sandbox-accent: var(--sandbox-accent);
     --font-heading: var(--font-sans);
     --font-sans: var(--font-sans);
     --color-sidebar-ring: var(--sidebar-ring);
@@ -55,6 +55,8 @@
 }
 
 :root {
+    --surface-bg: #f4f4f7;
+    --tertiary: #ebebef;
     --background: oklch(1 0 0);
     --foreground: oklch(0.145 0 0);
     --card: oklch(1 0 0);
@@ -90,6 +92,8 @@
 }
 
 .dark {
+    --surface-bg: #121214;
+    --tertiary: #16161A;
     --background: oklch(0.1 0 0);
     --foreground: oklch(0.985 0 0);
     --card: oklch(0.16 0 0);
@@ -129,6 +133,7 @@
     }
   body {
     @apply bg-background text-foreground;
+    --sandbox-accent: #D36395;
     }
   button:not(:disabled), [role="button"]:not(:disabled) {
     cursor: pointer;
@@ -137,3 +142,4 @@
     @apply font-sans;
     }
 }
+

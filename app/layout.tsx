@@ -26,7 +26,7 @@ export default function RootLayout({
       <body>
         <div
           className="pointer-events-none fixed rounded-[50%] blur-[160px]"
-          style={{ width: 800, height: 400, top: "-50%", left: "50%", transform: "translateX(-50%)", background: "#7107E7", opacity: 0.3, zIndex: 9999 }}
+          style={{ width: 1600, height: 200, top: -100, right: -800, background: "#7107E7", opacity: 0.15, zIndex: 9999 }}
         />
         <ThemeProvider defaultTheme="dark" enableSystem={false}>
           <TooltipProvider>{children}</TooltipProvider>
