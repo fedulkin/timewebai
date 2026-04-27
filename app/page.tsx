@@ -151,7 +151,7 @@ function StatusBadge({ code }: { code: number }) {
 
 const rubData    = [320, 510, 420, 680, 590, 870, 760, 1020, 940, 1150, 980, 1340, 1180, 1460]
 const tokenData  = [2.1, 3.4, 2.8, 4.5, 3.9, 5.8, 5.1,  6.8,  6.3,  7.7,  6.6,  8.9,  7.9,  9.7]
-const chartDays  = ["14 апр","15","16","17","18","19","20","21","22","23","24","25","26","27 апр"]
+const chartDays  = ["14","15","16","17","18","19","20","21","22","23","24","25","26","27"]
 
 function SpendingChart({ mode, fill }: { mode: "rub" | "tokens"; fill?: boolean }) {
   const [hoverIdx, setHoverIdx] = useState<number | null>(null)
@@ -192,7 +192,7 @@ function SpendingChart({ mode, fill }: { mode: "rub" | "tokens"; fill?: boolean 
     : null
 
   return (
-    <div ref={containerRef} className="relative w-full select-none pb-6" style={fill ? { height: "100%" } : { height: H + 24 }}>
+    <div ref={containerRef} className="relative w-full select-none pb-2" style={fill ? { height: "100%" } : { height: H + 24 }}>
       <svg
         viewBox={`0 0 ${W} ${H}`}
         width={W}
@@ -221,9 +221,9 @@ function SpendingChart({ mode, fill }: { mode: "rub" | "tokens"; fill?: boolean 
         })}
 
         {/* X labels */}
-        {[0, 6, 13].map(i => (
+        {chartDays.map((label, i) => (
           <text key={i} x={xs[i]} y={H - 4} textAnchor="middle" fontSize="9" fill="oklch(0.556 0 0)" fontFamily="ui-monospace,monospace">
-            {chartDays[i]}
+            {label}
           </text>
         ))}
 
