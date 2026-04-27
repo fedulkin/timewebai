@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useRef, useEffect } from "react"
+import { useState, useRef, useEffect, Suspense } from "react"
 import { useSearchParams } from "next/navigation"
 import { AppShell } from "@/components/app-shell"
 import { Button } from "@/components/ui/button"
@@ -192,7 +192,7 @@ function EmptyState({ model }: { model: string }) {
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
-export default function ChatPage() {
+function ChatContent() {
   const searchParams = useSearchParams()
   const [selectedModel, setSelectedModel] = useState(() => {
     const m = searchParams.get("model")
@@ -388,5 +388,13 @@ export default function ChatPage() {
 
       </div>
     </AppShell>
+  )
+}
+
+export default function ChatPage() {
+  return (
+    <Suspense>
+      <ChatContent />
+    </Suspense>
   )
 }

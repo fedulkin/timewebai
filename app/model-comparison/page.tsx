@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, Suspense } from "react"
 import { useSearchParams, useRouter } from "next/navigation"
 import { AppShell } from "@/components/app-shell"
 import { Button } from "@/components/ui/button"
@@ -128,7 +128,7 @@ function ModelSelect({ value, onChange, exclude, placeholder }: {
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
-export default function ModelComparisonPage() {
+function ModelComparisonContent() {
   const searchParams = useSearchParams()
   const router = useRouter()
 
@@ -256,5 +256,13 @@ export default function ModelComparisonPage() {
         />
       </div>
     </AppShell>
+  )
+}
+
+export default function ModelComparisonPage() {
+  return (
+    <Suspense>
+      <ModelComparisonContent />
+    </Suspense>
   )
 }
