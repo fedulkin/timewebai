@@ -1,5 +1,6 @@
 "use client"
 
+import { useState } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { useTheme } from "next-themes"
@@ -12,14 +13,15 @@ import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem,
   DropdownMenuSeparator, DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { Sheet, SheetContent } from "@/components/ui/sheet"
 import { Switch } from "@/components/ui/switch"
 import { Input } from "@/components/ui/input"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Separator } from "@/components/ui/separator"
 import { Logo } from "@/components/logo"
 import {
-  LayoutDashboard, ArrowLeftRight, MessageSquare, Columns2,
-  CreditCard, BookOpen, Search, Settings, LogOut, Sun, Moon,
+  LayoutDashboard, ArrowLeftRight, MessageSquare,
+  CreditCard, BookOpen, Search, Settings, LogOut, Sun, Moon, Menu,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 
@@ -34,82 +36,117 @@ const footerItems = [
   { icon: BookOpen, label: "Документация", href: "/docs" },
 ]
 
+function NavContent({ pathname, onNavigate }: { pathname: string; onNavigate?: () => void }) {
+  return (
+    <>
+      <SidebarContent className="px-2">
+        <SidebarGroup>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {navItems.map((item) => {
+                const active = pathname === item.href
+                return (
+                  <SidebarMenuItem key={item.label}>
+                    <SidebarMenuButton
+                      asChild
+                      isActive={active}
+                      className={cn(
+                        "gap-3 rounded-lg text-sm",
+                        active
+                          ? "bg-transparent! text-foreground font-medium"
+                          : "text-muted-foreground"
+                      )}
+                    >
+                      <Link href={item.href} onClick={onNavigate}>
+                        <item.icon className={cn("size-4 shrink-0", active && "text-primary")} />
+                        {item.label}
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                )
+              })}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+      </SidebarContent>
+
+      <SidebarFooter className="px-2 pb-4">
+        <Separator className="mb-2 opacity-40" />
+        <SidebarMenu>
+          {footerItems.map((item) => (
+            <SidebarMenuItem key={item.label}>
+              <SidebarMenuButton
+                asChild
+                className="gap-3 rounded-lg text-sm text-muted-foreground hover:text-foreground"
+              >
+                <Link href={item.href} onClick={onNavigate}>
+                  <item.icon className="size-4 shrink-0" />
+                  {item.label}
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          ))}
+        </SidebarMenu>
+      </SidebarFooter>
+    </>
+  )
+}
+
 export function AppShell({ children, mainClassName, fullHeight }: { children: React.ReactNode; mainClassName?: string; fullHeight?: boolean }) {
   const pathname = usePathname()
   const { theme, setTheme } = useTheme()
   const isDark = theme === "dark"
+  const [mobileNavOpen, setMobileNavOpen] = useState(false)
 
   return (
     <SidebarProvider defaultOpen>
       <div className={cn("flex w-full bg-background", fullHeight ? "h-svh overflow-hidden" : "min-h-svh")}>
-        <Sidebar collapsible="none" className="sticky top-0 h-svh bg-background w-60 shrink-0 self-start">
+
+        {/* Desktop sidebar */}
+        <Sidebar collapsible="none" className="hidden md:flex sticky top-0 h-svh bg-background w-60 shrink-0 self-start">
           <SidebarHeader className="p-7 items-start">
             <Logo className="h-4 w-auto" />
           </SidebarHeader>
-
-          <SidebarContent className="px-2">
-            <SidebarGroup>
-              <SidebarGroupContent>
-                <SidebarMenu>
-                  {navItems.map((item) => {
-                    const active = pathname === item.href
-                    return (
-                      <SidebarMenuItem key={item.label}>
-                        <SidebarMenuButton
-                          asChild
-                          isActive={active}
-                          className={cn(
-                            "gap-3 rounded-lg text-sm",
-                            active
-                              ? "bg-transparent! text-foreground font-medium"
-                              : "text-muted-foreground"
-                          )}
-                        >
-                          <Link href={item.href}>
-                            <item.icon className={cn("size-4 shrink-0", active && "text-primary")} />
-                            {item.label}
-                          </Link>
-                        </SidebarMenuButton>
-                      </SidebarMenuItem>
-                    )
-                  })}
-                </SidebarMenu>
-              </SidebarGroupContent>
-            </SidebarGroup>
-          </SidebarContent>
-
-          <SidebarFooter className="px-2 pb-4">
-            <Separator className="mb-2 opacity-40" />
-            <SidebarMenu>
-              {footerItems.map((item) => (
-                <SidebarMenuItem key={item.label}>
-                  <SidebarMenuButton
-                    asChild
-                    className="gap-3 rounded-lg text-sm text-muted-foreground hover:text-foreground"
-                  >
-                    <Link href={item.href}>
-                      <item.icon className="size-4 shrink-0" />
-                      {item.label}
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarFooter>
+          <NavContent pathname={pathname} />
         </Sidebar>
 
+        {/* Mobile nav sheet */}
+        <Sheet open={mobileNavOpen} onOpenChange={setMobileNavOpen}>
+          <SheetContent side="left" className="w-64 p-0 bg-background flex flex-col">
+            <div className="p-6 pb-4">
+              <Logo className="h-4 w-auto" />
+            </div>
+            <div className="flex-1 flex flex-col overflow-y-auto">
+              <NavContent pathname={pathname} onNavigate={() => setMobileNavOpen(false)} />
+            </div>
+          </SheetContent>
+        </Sheet>
+
         <div className={cn("flex flex-col flex-1 min-w-0", fullHeight && "overflow-hidden")}>
-          <header
-            className="sticky top-0 z-50 flex items-center justify-between bg-background shrink-0"
-            style={{ padding: "18px 28px 18px 6px" }}
-          >
-            <div className="relative">
+          {/* Header */}
+          <header className="sticky top-0 z-50 flex items-center justify-between bg-background shrink-0 px-4 md:px-7 py-3 md:py-[18px] md:pr-7 md:pl-1.5">
+            {/* Mobile: hamburger */}
+            <button
+              className="md:hidden p-2 -ml-1 rounded-lg hover:bg-muted/40 transition-colors text-muted-foreground"
+              onClick={() => setMobileNavOpen(true)}
+              aria-label="Открыть меню"
+            >
+              <Menu className="size-5" />
+            </button>
+
+            {/* Mobile: logo (center) */}
+            <Logo className="h-3.5 w-auto md:hidden absolute left-1/2 -translate-x-1/2" />
+
+            {/* Desktop: search */}
+            <div className="relative hidden md:block">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground" />
               <Input
                 placeholder="Поиск"
                 className="pl-9 bg-muted/30 border-border/40 text-sm h-9 w-72"
               />
             </div>
+
+            {/* User menu */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <button className="flex items-center gap-2.5 rounded-lg px-2 py-1 hover:bg-white/5 transition-colors outline-none">
@@ -118,7 +155,7 @@ export function AppShell({ children, mainClassName, fullHeight }: { children: Re
                       FA
                     </AvatarFallback>
                   </Avatar>
-                  <span className="text-sm text-muted-foreground font-mono">fa20749</span>
+                  <span className="hidden md:inline text-sm text-muted-foreground font-mono">fa20749</span>
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-52">
@@ -145,7 +182,10 @@ export function AppShell({ children, mainClassName, fullHeight }: { children: Re
             </DropdownMenu>
           </header>
 
-          <main className={cn("ml-2 mr-6 mb-2 rounded-[24px] bg-surface-bg ring-1 ring-white/5 flex flex-col gap-10 p-10", mainClassName)}>
+          <main className={cn(
+            "mx-2 mb-2 md:ml-2 md:mr-6 rounded-[16px] md:rounded-[24px] bg-surface-bg ring-1 ring-white/5 flex flex-col gap-6 md:gap-10 p-4 md:p-10",
+            mainClassName
+          )}>
             {children}
           </main>
         </div>

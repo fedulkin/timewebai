@@ -1007,10 +1007,10 @@ export default function AIGatewayPage() {
       />
 
         {/* Hero + Code */}
-        <div className="grid grid-cols-2 gap-10 items-center bg-tertiary border-b border-border/60 p-10 -m-10 mb-0" style={{ borderRadius: "24px 24px 0 0" }}>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-10 items-center bg-tertiary border-b border-border/60 p-6 md:p-10 -m-4 md:-m-10 mb-0" style={{ borderRadius: "16px 16px 0 0" }}>
           <div className="flex flex-col gap-6">
             <div className="flex flex-col gap-3">
-              <h1 className="text-4xl font-bold tracking-tight">AI Gateway</h1>
+              <h1 className="text-3xl md:text-4xl font-bold tracking-tight">AI Gateway</h1>
               <p className="text-muted-foreground leading-relaxed">
                 AI Gateway позволяет переключаться между сотнями моделей
                 без необходимости управлять ограничениями потребления
@@ -1060,16 +1060,16 @@ export default function AIGatewayPage() {
           {/* Models tab */}
           <TabsContent value="models" className="mt-8 flex flex-col gap-6">
             {/* Filters row */}
-            <div className="flex items-center justify-between gap-4 flex-wrap">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <h2 className="text-2xl font-semibold tracking-tight">Модели</h2>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-wrap">
                 <ProviderFilter selected={selectedProviders} onChange={setSelectedProviders} />
                 <CapabilitiesFilter selected={selectedCaps} onChange={setSelectedCaps} />
-                <div className="relative">
+                <div className="relative flex-1 sm:flex-none">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground" />
                   <Input
                     placeholder="Найти модель"
-                    className="pl-9 bg-muted/30 border-border/60 text-sm h-9 w-52"
+                    className="pl-9 bg-muted/30 border-border/60 text-sm h-9 w-full sm:w-52"
                   />
                 </div>
               </div>
@@ -1187,11 +1187,11 @@ export default function AIGatewayPage() {
             <QuickStart onCreateKey={() => setCreateOpen(true)} />
           </TabsContent>
           <TabsContent value="keys" className="mt-8 flex flex-col gap-6">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <h2 className="text-2xl font-semibold tracking-tight">API-ключи</h2>
               <Button
                 onClick={() => setCreateOpen(true)}
-                className="bg-primary hover:bg-primary/90 text-primary-foreground"
+                className="bg-primary hover:bg-primary/90 text-primary-foreground w-full sm:w-auto"
               >
                 Создать ключ
               </Button>

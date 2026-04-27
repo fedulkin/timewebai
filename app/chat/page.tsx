@@ -8,13 +8,14 @@ import { Textarea } from "@/components/ui/textarea"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Slider } from "@/components/ui/slider"
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet"
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select"
 import {
   Tooltip, TooltipContent, TooltipProvider, TooltipTrigger,
 } from "@/components/ui/tooltip"
-import { ArrowUp, SquarePen, Bot, Info } from "lucide-react"
+import { ArrowUp, SquarePen, Bot, Info, SlidersHorizontal } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { models } from "@/app/ai-gateway/models-data"
 import { ProviderIcon } from "@/components/provider-icon"
@@ -203,6 +204,7 @@ function ChatContent() {
   const [messages, setMessages] = useState<Message[]>([])
   const [input, setInput] = useState("")
   const [isLoading, setIsLoading] = useState(false)
+  const [mobileSettingsOpen, setMobileSettingsOpen] = useState(false)
 
   function setParam(key: string, value: number) {
     setParams((prev) => ({ ...prev, [key]: value }))
@@ -266,93 +268,121 @@ function ChatContent() {
     }
   }
 
+  // Settings panel inner content (shared between sidebar and sheet)
+  const settingsContent = (
+    <TooltipProvider delayDuration={300}>
+      <div className="flex flex-col gap-5 p-5">
+        {/* Model */}
+        <div className="flex flex-col gap-2">
+          <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+            Модель
+          </Label>
+          <Select value={selectedModel} onValueChange={setSelectedModel}>
+            <SelectTrigger className="h-9 bg-muted/30 border-border/60 text-sm w-full">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent className="max-h-72">
+              {models.map((m) => (
+                <SelectItem key={m.id} value={m.id}>
+                  <div className="flex items-center gap-2">
+                    <ModelIcon provider={m.provider} size="sm" />
+                    <span className="font-mono text-xs truncate">{m.id}</span>
+                  </div>
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        {/* System prompt */}
+        <div className="flex flex-col gap-2">
+          <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+            Мастер-промпт
+          </Label>
+          <Textarea
+            placeholder="Например: Ты — помощник разработчика. Отвечай кратко и с примерами кода."
+            value={systemPrompt}
+            onChange={(e) => setSystemPrompt(e.target.value)}
+            className="min-h-[100px] resize-none bg-muted/30 border-border/60 text-sm leading-relaxed"
+          />
+        </div>
+
+        {/* Divider */}
+        <div className="h-px bg-border/60" />
+
+        {/* Parameters */}
+        <div className="flex flex-col gap-4">
+          <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+            Параметры
+          </Label>
+          {PARAM_DEFS.map((def) => (
+            <ParamSlider
+              key={def.key}
+              def={def}
+              value={params[def.key]}
+              onChange={(v) => setParam(def.key, v)}
+            />
+          ))}
+        </div>
+      </div>
+
+      {/* New chat button */}
+      <div className="p-4 border-t border-border/60">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={handleNewChat}
+          className="w-full gap-2 border-border/60 text-muted-foreground hover:text-foreground"
+        >
+          <SquarePen className="size-3.5" />
+          Очистить чат
+        </Button>
+      </div>
+    </TooltipProvider>
+  )
+
   return (
     <AppShell mainClassName="p-0 gap-0 overflow-hidden flex-1 min-h-0" fullHeight>
       <div className="flex h-full min-h-0">
 
-        {/* ── Left panel ── */}
-        <TooltipProvider delayDuration={300}>
-        <div className="w-80 shrink-0 border-r border-border/60 flex flex-col gap-0 overflow-y-auto">
-          <div className="flex flex-col gap-5 p-5">
-
-            {/* Model */}
-            <div className="flex flex-col gap-2">
-              <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                Модель
-              </Label>
-              <Select value={selectedModel} onValueChange={setSelectedModel}>
-                <SelectTrigger className="h-9 bg-muted/30 border-border/60 text-sm w-full">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent className="max-h-72">
-                  {models.map((m) => (
-                    <SelectItem key={m.id} value={m.id}>
-                      <div className="flex items-center gap-2">
-                        <ModelIcon provider={m.provider} size="sm" />
-                        <span className="font-mono text-xs truncate">{m.id}</span>
-                      </div>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            {/* System prompt */}
-            <div className="flex flex-col gap-2">
-              <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                Мастер-промпт
-              </Label>
-              <Textarea
-                placeholder="Например: Ты — помощник разработчика. Отвечай кратко и с примерами кода."
-                value={systemPrompt}
-                onChange={(e) => setSystemPrompt(e.target.value)}
-                className="min-h-[100px] resize-none bg-muted/30 border-border/60 text-sm leading-relaxed"
-              />
-            </div>
-
-            {/* Divider */}
-            <div className="h-px bg-border/60" />
-
-            {/* Parameters */}
-            <div className="flex flex-col gap-4">
-              <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                Параметры
-              </Label>
-              {PARAM_DEFS.map((def) => (
-                <ParamSlider
-                  key={def.key}
-                  def={def}
-                  value={params[def.key]}
-                  onChange={(v) => setParam(def.key, v)}
-                />
-              ))}
-            </div>
-          </div>
-
-          {/* New chat button */}
-          <div className="p-4 border-t border-border/60">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleNewChat}
-              className="w-full gap-2 border-border/60 text-muted-foreground hover:text-foreground"
-            >
-              <SquarePen className="size-3.5" />
-              Очистить чат
-            </Button>
-          </div>
+        {/* ── Left panel (desktop) ── */}
+        <div className="hidden md:flex w-80 shrink-0 border-r border-border/60 flex-col gap-0 overflow-y-auto">
+          {settingsContent}
         </div>
-        </TooltipProvider>
+
+        {/* ── Settings sheet (mobile) ── */}
+        <Sheet open={mobileSettingsOpen} onOpenChange={setMobileSettingsOpen}>
+          <SheetContent side="left" className="w-80 p-0 flex flex-col overflow-y-auto">
+            <SheetHeader className="px-5 pt-5 pb-0">
+              <SheetTitle className="text-sm font-medium text-left">Настройки</SheetTitle>
+            </SheetHeader>
+            {settingsContent}
+          </SheetContent>
+        </Sheet>
 
         {/* ── Chat area ── */}
         <div className="flex-1 flex flex-col min-w-0 min-h-0">
+
+          {/* Mobile top bar */}
+          <div className="md:hidden flex items-center justify-between px-4 py-2.5 border-b border-border/60">
+            <div className="flex items-center gap-2">
+              <ModelIcon provider={currentProvider} size="sm" />
+              <span className="font-mono text-xs text-muted-foreground truncate max-w-[180px]">{selectedModel}</span>
+            </div>
+            <button
+              onClick={() => setMobileSettingsOpen(true)}
+              className="p-2 rounded-lg hover:bg-muted/40 transition-colors text-muted-foreground"
+            >
+              <SlidersHorizontal className="size-4" />
+            </button>
+          </div>
 
           {/* Messages */}
           <div className="flex-1 overflow-y-auto flex flex-col">
             {messages.length === 0 && !isLoading ? (
               <EmptyState model={selectedModel} />
             ) : (
-              <div className="flex flex-col gap-4 px-6 py-6">
+              <div className="flex flex-col gap-4 px-4 md:px-6 py-6">
                 {messages.map((msg) => (
                   <MessageBubble key={msg.id} message={msg} />
                 ))}
@@ -363,7 +393,7 @@ function ChatContent() {
           </div>
 
           {/* Input bar */}
-          <div className="border-t border-border/60 px-6 py-4">
+          <div className="border-t border-border/60 px-4 md:px-6 py-4">
             <div className="flex items-end gap-3 rounded-2xl border border-border/60 bg-background dark:bg-muted/20 px-4 py-3 focus-within:ring-1 focus-within:ring-primary/50 transition-shadow">
               <Textarea
                 ref={textareaRef}

@@ -240,12 +240,12 @@ export default function ModelPage({ params }: { params: Promise<{ slug: string[]
       </button>
 
       {/* Header */}
-      <div className="flex items-start justify-between gap-6">
+      <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
         <div className="flex items-center gap-5">
           <ProviderIcon provider={model.provider} className="size-14 rounded-2xl" />
           <div className="flex flex-col gap-1.5">
             <div className="flex items-center gap-2 group/title">
-              <h1 className="text-2xl font-bold tracking-tight font-mono">{model.id}</h1>
+              <h1 className="text-xl md:text-2xl font-bold tracking-tight font-mono">{model.id}</h1>
               <CopyButton text={model.id} />
             </div>
             <div className="flex items-center gap-3">
@@ -274,7 +274,7 @@ export default function ModelPage({ params }: { params: Promise<{ slug: string[]
             <Button
               size="lg"
               onClick={() => router.push(`/chat?model=${encodeURIComponent(model.id)}`)}
-              className="bg-primary hover:bg-primary/90 text-primary-foreground"
+              className="bg-primary hover:bg-primary/90 text-primary-foreground flex-1 sm:flex-none"
             >
               Попробовать в плейграунде
             </Button>
@@ -283,7 +283,7 @@ export default function ModelPage({ params }: { params: Promise<{ slug: string[]
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         <StatCard label="Контекст" value={fmtK(model.context)} sub="токенов" />
         <StatCard label="Макс. ответ" value={fmtK(model.maxOut)} sub="токенов" />
         <StatCard label="Чтение" value={model.read} sub="за млн токенов" />
@@ -291,7 +291,7 @@ export default function ModelPage({ params }: { params: Promise<{ slug: string[]
       </div>
 
       {/* Body */}
-      <div className="grid grid-cols-2 gap-8 items-start">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
         {/* Left */}
         <div className="flex flex-col gap-8">
           {/* Description */}

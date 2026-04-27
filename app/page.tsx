@@ -277,9 +277,9 @@ function StatsRow() {
   const [mode, setMode] = useState<"rub" | "tokens">("rub")
 
   return (
-    <div className="grid grid-cols-3 gap-4">
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
       {/* Расход — 2/3 */}
-      <Card className="col-span-2 bg-background dark:bg-transparent border-border/60 py-0 gap-0 flex flex-col">
+      <Card className="md:col-span-2 bg-background dark:bg-transparent border-border/60 py-0 gap-0 flex flex-col">
         <div className="px-6 pt-6 pb-3 flex flex-col gap-3 shrink-0">
           <div className="flex items-center justify-between">
             <p className="text-sm text-muted-foreground">Расход</p>
@@ -349,9 +349,9 @@ export default function DashboardPage() {
   return (
     <AppShell>
         {/* Page header */}
-        <div className="flex items-center justify-between gap-4 flex-wrap">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <h1 className="text-2xl font-semibold tracking-tight">Дашборд</h1>
-          <div className="flex items-center gap-2 flex-wrap">
+          <div className="flex items-center gap-2 overflow-x-auto pb-0.5 -mb-0.5 shrink-0">
             <FilterButton icon={<CalendarDays className="size-3.5" />}>За текущий месяц</FilterButton>
             <FilterButton>По всем моделям</FilterButton>
             <FilterButton>По всем инструментам</FilterButton>
@@ -362,7 +362,7 @@ export default function DashboardPage() {
         <StatsRow />
 
         {/* Feature cards */}
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <FeatureCard icon={Route} title="AI Gateway"
             description="Единый API для работы с 50+ моделями от ведущих провайдеров"
             features={["OpenAI, Antropic, Google, Mistral и другие", "Единый биллинг и лимиты", "Кэширование и балансировка"]}
@@ -375,7 +375,7 @@ export default function DashboardPage() {
         </div>
 
         {/* Bottom row */}
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <Card className="bg-background dark:bg-transparent border-border/60 py-0">
             <CardContent className="p-6 flex flex-col gap-4">
               <p className="text-sm font-medium">Расходы по моделям</p>

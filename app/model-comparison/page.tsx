@@ -82,9 +82,9 @@ function CompareRow({
   b: React.ReactNode
 }) {
   return (
-    <div className="grid grid-cols-2 divide-x divide-border/50 border-b border-border/40 last:border-b-0">
-      <div className="px-7 py-5">{a}</div>
-      <div className="px-7 py-5">{b}</div>
+    <div className="grid grid-cols-2 divide-x divide-border/50 border-b border-border/40 last:border-b-0 min-w-[560px]">
+      <div className="px-5 sm:px-7 py-5">{a}</div>
+      <div className="px-5 sm:px-7 py-5">{b}</div>
     </div>
   )
 }
@@ -174,16 +174,16 @@ function ModelComparisonContent() {
       </div>
 
       {/* Selectors */}
-      <div className="grid grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <ModelSelect value={modelA} onChange={setModelA} exclude={modelB} />
         <ModelSelect value={modelB} onChange={setModelB} exclude={modelA} placeholder="Выберите модель для сравнения" />
       </div>
 
       {/* Comparison table */}
-      <div className="rounded-2xl border border-border/60 overflow-hidden">
+      <div className="rounded-2xl border border-border/60 overflow-hidden overflow-x-auto">
 
         {/* Model headers */}
-        <div className="grid grid-cols-2 divide-x divide-border/50 border-b border-border/60 bg-muted/20">
+        <div className="grid grid-cols-2 divide-x divide-border/50 border-b border-border/60 bg-muted/20 min-w-[560px]">
           <div className="px-7 py-6 flex items-center gap-4">
             <ModelIcon provider={mA.provider} />
             <div className="flex flex-col gap-1 min-w-0">
