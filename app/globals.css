@@ -4,7 +4,14 @@
 
 @custom-variant dark (&:is(.dark *));
 
+:root {
+    --surface-bg: #121214;
+    --tertiary: #16161A;
+}
+
 @theme inline {
+    --color-surface-bg: var(--surface-bg);
+    --color-tertiary: var(--tertiary);
     --font-heading: var(--font-sans);
     --font-sans: var(--font-sans);
     --color-sidebar-ring: var(--sidebar-ring);
@@ -83,9 +90,9 @@
 }
 
 .dark {
-    --background: oklch(0.145 0 0);
+    --background: oklch(0.1 0 0);
     --foreground: oklch(0.985 0 0);
-    --card: oklch(0.205 0 0);
+    --card: oklch(0.16 0 0);
     --card-foreground: oklch(0.985 0 0);
     --popover: oklch(0.205 0 0);
     --popover-foreground: oklch(0.985 0 0);
