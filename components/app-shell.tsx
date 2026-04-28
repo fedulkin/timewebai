@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import { useTheme } from "next-themes"
 import {
   Sidebar, SidebarContent, SidebarFooter, SidebarGroup,
@@ -21,90 +21,119 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Separator } from "@/components/ui/separator"
 import { Logo } from "@/components/logo"
 import {
-  LayoutDashboard, ArrowLeftRight, MessageSquare,
-  CreditCard, BookOpen, Search, Settings, LogOut, Sun, Moon, Menu, Blocks, Workflow,
+  LayoutDashboard, CreditCard, BookOpen, Search,
+  Settings, LogOut, Sun, Moon, Menu, Plus, Bot,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { useAgents, type Agent } from "@/components/agents-provider"
 
-const navItems = [
-  { icon: LayoutDashboard, label: "Дашборд", href: "/" },
-  { icon: ArrowLeftRight, label: "AI Gateway", href: "/ai-gateway" },
-  { icon: MessageSquare, label: "LLM-плейграунд", href: "/chat" },
-]
-
-const solutionItems = [
-  { icon: Blocks, label: "OpenClaw", href: "/openclaw" },
-  { icon: Workflow, label: "n8n", href: "/n8n" },
-]
+// ─── Nav ──────────────────────────────────────────────────────────────────────
 
 const footerItems = [
   { icon: CreditCard, label: "Баланс и платежи", href: "/billing" },
   { icon: BookOpen, label: "Документация", href: "/docs" },
 ]
 
+// ─── Agent avatar ─────────────────────────────────────────────────────────────
+
+function AgentAvatar({ agent, size = "sm" }: { agent: Agent; size?: "sm" | "md" }) {
+  return (
+    <div
+      className={cn(
+        "rounded-lg flex items-center justify-center shrink-0 font-semibold text-white",
+        size === "sm" ? "size-6 text-[10px]" : "size-8 text-xs"
+      )}
+      style={{ backgroundColor: agent.color }}
+    >
+      {agent.name.charAt(0).toUpperCase()}
+    </div>
+  )
+}
+
+// ─── Nav content ──────────────────────────────────────────────────────────────
+
 function NavContent({ pathname, onNavigate }: { pathname: string; onNavigate?: () => void }) {
+  const { agents } = useAgents()
+  const router = useRouter()
+
+  function handleCreate() {
+    onNavigate?.()
+    router.push("/agents/new")
+  }
+
   return (
     <>
-      <SidebarContent className="px-2">
-        {/* Main nav */}
-        <SidebarGroup>
+      <SidebarContent className="px-2 flex flex-col gap-1">
+        {/* Dashboard */}
+        <SidebarGroup className="pb-0">
           <SidebarGroupContent>
             <SidebarMenu>
-              {navItems.map((item) => {
-                const active = pathname === item.href
-                return (
-                  <SidebarMenuItem key={item.label}>
-                    <SidebarMenuButton
-                      asChild
-                      isActive={active}
-                      className={cn(
-                        "gap-3 rounded-lg text-sm",
-                        active
-                          ? "bg-transparent! text-foreground font-medium"
-                          : "text-muted-foreground"
-                      )}
-                    >
-                      <Link href={item.href} onClick={onNavigate}>
-                        <item.icon className={cn("size-4 shrink-0", active && "text-primary")} />
-                        {item.label}
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                )
-              })}
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  asChild
+                  isActive={pathname === "/"}
+                  className={cn(
+                    "gap-3 rounded-lg text-sm",
+                    pathname === "/"
+                      ? "bg-transparent! text-foreground font-medium"
+                      : "text-muted-foreground"
+                  )}
+                >
+                  <Link href="/" onClick={onNavigate}>
+                    <LayoutDashboard className={cn("size-4 shrink-0", pathname === "/" && "text-primary")} />
+                    Дашборд
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
 
-        {/* Solutions */}
-        <SidebarGroup>
-          <p className="px-2 mb-1 text-[11px] font-medium text-muted-foreground/50 uppercase tracking-wider">
-            Решения
-          </p>
+        {/* Agents */}
+        <SidebarGroup className="flex-1 pb-0">
+          <div className="flex items-center justify-between px-2 mb-1">
+            <span className="text-[11px] font-medium text-muted-foreground/50 uppercase tracking-wider">
+              Агенты
+            </span>
+            <button
+              onClick={handleCreate}
+              className="size-5 flex items-center justify-center rounded text-muted-foreground/50 hover:text-foreground hover:bg-muted/60 transition-colors"
+              title="Создать агента"
+            >
+              <Plus className="size-3.5" />
+            </button>
+          </div>
+
           <SidebarGroupContent>
             <SidebarMenu>
-              {solutionItems.map((item) => {
-                const active = pathname === item.href
-                return (
-                  <SidebarMenuItem key={item.label}>
-                    <SidebarMenuButton
-                      asChild
-                      isActive={active}
-                      className={cn(
-                        "gap-3 rounded-lg text-sm",
-                        active
-                          ? "bg-transparent! text-foreground font-medium"
-                          : "text-muted-foreground"
-                      )}
-                    >
-                      <Link href={item.href} onClick={onNavigate}>
-                        <item.icon className={cn("size-4 shrink-0", active && "text-primary")} />
-                        {item.label}
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                )
-              })}
+              {agents.length === 0 ? (
+                <div className="px-2 py-3 text-xs text-muted-foreground/50 text-center">
+                  Нет агентов
+                </div>
+              ) : (
+                agents.map((agent) => {
+                  const active = pathname === `/agents/${agent.id}`
+                  return (
+                    <SidebarMenuItem key={agent.id}>
+                      <SidebarMenuButton
+                        asChild
+                        isActive={active}
+                        className={cn(
+                          "gap-2.5 rounded-lg text-sm h-8",
+                          active
+                            ? "bg-transparent! text-foreground font-medium"
+                            : "text-muted-foreground"
+                        )}
+                      >
+                        <Link href={`/agents/${agent.id}`} onClick={onNavigate}>
+                          <AgentAvatar agent={agent} size="sm" />
+                          <span className="truncate">{agent.name}</span>
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  )
+                })
+              )}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
@@ -132,7 +161,13 @@ function NavContent({ pathname, onNavigate }: { pathname: string; onNavigate?: (
   )
 }
 
-export function AppShell({ children, mainClassName, fullHeight }: { children: React.ReactNode; mainClassName?: string; fullHeight?: boolean }) {
+// ─── App shell ────────────────────────────────────────────────────────────────
+
+export function AppShell({ children, mainClassName, fullHeight }: {
+  children: React.ReactNode
+  mainClassName?: string
+  fullHeight?: boolean
+}) {
   const pathname = usePathname()
   const { theme, setTheme } = useTheme()
   const isDark = theme === "dark"
@@ -175,7 +210,7 @@ export function AppShell({ children, mainClassName, fullHeight }: { children: Re
               <Menu className="size-5" />
             </button>
 
-            {/* Mobile: logo (center) */}
+            {/* Mobile: logo */}
             <Logo className="h-3.5 w-auto md:hidden absolute left-1/2 -translate-x-1/2" />
 
             {/* Desktop: search */}
