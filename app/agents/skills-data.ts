@@ -13,6 +13,8 @@ export type Skill = {
   description: string
   longDescription: string
   author: string
+  website?: string
+  docs?: string
   tools: string[]
   category: "search" | "communication" | "data" | "productivity" | "dev"
   icon: string
@@ -29,6 +31,8 @@ export const SKILLS: Skill[] = [
     description: "Ищет актуальную информацию в интернете по запросу пользователя",
     longDescription: "Подключите Brave Search, чтобы агент мог искать актуальную информацию в интернете. Агент будет использовать поиск автоматически, когда вопрос требует свежих данных или фактов, которые могут измениться.",
     author: "Brave Software",
+    website: "https://brave.com/search/api/",
+    docs: "https://api.search.brave.com/app/documentation/web-search/get-started",
     tools: ["web_search", "get_page_content"],
     category: "search",
     icon: "Search",
@@ -44,6 +48,8 @@ export const SKILLS: Skill[] = [
     description: "Находит свежие новости и публикации по заданной теме",
     longDescription: "NewsAPI даёт доступ к миллионам новостных статей из тысяч источников. Агент сможет находить свежие публикации, отслеживать упоминания и делать дайджесты новостей по любой теме.",
     author: "NewsAPI.org",
+    website: "https://newsapi.org",
+    docs: "https://newsapi.org/docs",
     tools: ["search_news", "get_top_headlines", "get_sources"],
     category: "search",
     icon: "Newspaper",
@@ -61,6 +67,8 @@ export const SKILLS: Skill[] = [
     description: "Отправляет сообщения и уведомления в Telegram-каналы и чаты",
     longDescription: "Подключите Telegram-бота, чтобы агент мог отправлять сообщения, уведомления и файлы в каналы и личные чаты. Удобно для рассылок, алертов и автоматических отчётов.",
     author: "Telegram",
+    website: "https://core.telegram.org/bots",
+    docs: "https://core.telegram.org/bots/api",
     tools: ["send_message", "send_photo", "send_document", "get_chat"],
     category: "communication",
     icon: "Send",
@@ -77,6 +85,7 @@ export const SKILLS: Skill[] = [
     description: "Составляет и отправляет письма через настроенный почтовый сервер",
     longDescription: "Позвольте агенту отправлять письма через ваш SMTP-сервер. Агент сможет составлять и рассылать письма, отвечать на запросы и отправлять отчёты на указанные адреса.",
     author: "SMTP",
+    docs: "https://datatracker.ietf.org/doc/html/rfc5321",
     tools: ["send_email", "send_email_with_attachments"],
     category: "communication",
     icon: "Mail",
@@ -95,6 +104,8 @@ export const SKILLS: Skill[] = [
     description: "Постит сообщения в каналы и отправляет личные уведомления",
     longDescription: "Интегрируйте Slack, чтобы агент мог отправлять сообщения в каналы, упоминать пользователей и создавать треды. Отлично подходит для уведомлений команды и автоматических статус-апдейтов.",
     author: "Slack Technologies",
+    website: "https://api.slack.com",
+    docs: "https://api.slack.com/docs",
     tools: ["post_message", "post_in_thread", "list_channels", "get_user"],
     category: "communication",
     icon: "Hash",
@@ -113,6 +124,8 @@ export const SKILLS: Skill[] = [
     description: "Читает и записывает данные в реляционную базу данных",
     longDescription: "Подключите PostgreSQL, чтобы агент мог выполнять SQL-запросы, читать таблицы и записывать результаты. Полезно для аналитики, отчётности и работы с бизнес-данными.",
     author: "PostgreSQL",
+    website: "https://www.postgresql.org",
+    docs: "https://www.postgresql.org/docs/current/",
     tools: ["query", "execute", "list_tables", "describe_table"],
     category: "data",
     icon: "Database",
@@ -132,6 +145,8 @@ export const SKILLS: Skill[] = [
     description: "Читает и обновляет данные в Google Sheets по ID таблицы",
     longDescription: "Подключите Google Sheets, чтобы агент мог читать и записывать данные в таблицы. Удобно для ведения баз клиентов, отчётности и совместной работы с данными.",
     author: "Google",
+    website: "https://workspace.google.com/products/sheets/",
+    docs: "https://developers.google.com/sheets/api/guides/concepts",
     tools: ["read_range", "write_range", "append_rows", "list_sheets"],
     category: "data",
     icon: "Table2",
@@ -165,6 +180,8 @@ export const SKILLS: Skill[] = [
     description: "Создаёт события, проверяет занятость и управляет встречами",
     longDescription: "Подключите Google Calendar, чтобы агент мог создавать события, проверять доступность времени и управлять встречами. Незаменимо для планирования и координации.",
     author: "Google",
+    website: "https://workspace.google.com/products/calendar/",
+    docs: "https://developers.google.com/calendar/api/guides/overview",
     tools: ["create_event", "list_events", "update_event", "delete_event", "check_availability"],
     category: "productivity",
     icon: "CalendarDays",
@@ -181,6 +198,8 @@ export const SKILLS: Skill[] = [
     description: "Создаёт и обновляет страницы, базы данных и блоки в Notion",
     longDescription: "Подключите Notion, чтобы агент мог создавать страницы, добавлять записи в базы данных и обновлять контент. Отлично для ведения заметок, CRM и управления задачами.",
     author: "Notion Labs",
+    website: "https://www.notion.so",
+    docs: "https://developers.notion.com",
     tools: ["create_page", "update_page", "query_database", "append_blocks"],
     category: "productivity",
     icon: "FileText",
@@ -197,6 +216,8 @@ export const SKILLS: Skill[] = [
     description: "Создаёт и обновляет задачи, читает PR и управляет репозиторием",
     longDescription: "Интегрируйте GitHub, чтобы агент мог создавать и комментировать issues, читать pull requests и управлять репозиторием. Удобно для автоматизации процессов разработки.",
     author: "GitHub",
+    website: "https://github.com",
+    docs: "https://docs.github.com/en/rest",
     tools: ["create_issue", "list_issues", "add_comment", "list_pull_requests", "get_file"],
     category: "productivity",
     icon: "GitPullRequest",

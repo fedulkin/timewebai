@@ -10,7 +10,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import {
   Search, Newspaper, Send, Mail, Hash, Database, Table2, Globe,
-  CalendarDays, FileText, GitPullRequest, Code2, Monitor,
+  CalendarDays, FileText, GitPullRequest, Code2, Monitor, ExternalLink, BookOpen,
 } from "lucide-react"
 import { type Skill } from "@/app/agents/skills-data"
 import { cn } from "@/lib/utils"
@@ -94,6 +94,32 @@ export function SkillConfigDialog({
               <DialogTitle className="text-base font-semibold leading-tight">{skill.name}</DialogTitle>
               <p className="text-xs text-muted-foreground font-mono">{skill.connector}</p>
               <p className="text-xs text-muted-foreground/60 mt-0.5">by {skill.author}</p>
+              {(skill.website || skill.docs) && (
+                <div className="flex items-center gap-3 mt-1.5">
+                  {skill.website && (
+                    <a
+                      href={skill.website}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 text-[11px] text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                      <ExternalLink className="size-3" />
+                      Сайт
+                    </a>
+                  )}
+                  {skill.docs && (
+                    <a
+                      href={skill.docs}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 text-[11px] text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                      <BookOpen className="size-3" />
+                      Документация
+                    </a>
+                  )}
+                </div>
+              )}
             </div>
           </div>
 
