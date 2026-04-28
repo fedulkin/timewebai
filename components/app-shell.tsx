@@ -22,7 +22,7 @@ import { Separator } from "@/components/ui/separator"
 import { Logo } from "@/components/logo"
 import {
   LayoutDashboard, ArrowLeftRight, MessageSquare,
-  CreditCard, BookOpen, Search, Settings, LogOut, Sun, Moon, Menu,
+  CreditCard, BookOpen, Search, Settings, LogOut, Sun, Moon, Menu, Blocks, Workflow,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 
@@ -30,6 +30,11 @@ const navItems = [
   { icon: LayoutDashboard, label: "Дашборд", href: "/" },
   { icon: ArrowLeftRight, label: "AI Gateway", href: "/ai-gateway" },
   { icon: MessageSquare, label: "LLM-плейграунд", href: "/chat" },
+]
+
+const solutionItems = [
+  { icon: Blocks, label: "OpenClaw", href: "/openclaw" },
+  { icon: Workflow, label: "n8n", href: "/n8n" },
 ]
 
 const footerItems = [
@@ -41,10 +46,44 @@ function NavContent({ pathname, onNavigate }: { pathname: string; onNavigate?: (
   return (
     <>
       <SidebarContent className="px-2">
+        {/* Main nav */}
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
               {navItems.map((item) => {
+                const active = pathname === item.href
+                return (
+                  <SidebarMenuItem key={item.label}>
+                    <SidebarMenuButton
+                      asChild
+                      isActive={active}
+                      className={cn(
+                        "gap-3 rounded-lg text-sm",
+                        active
+                          ? "bg-transparent! text-foreground font-medium"
+                          : "text-muted-foreground"
+                      )}
+                    >
+                      <Link href={item.href} onClick={onNavigate}>
+                        <item.icon className={cn("size-4 shrink-0", active && "text-primary")} />
+                        {item.label}
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                )
+              })}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        {/* Solutions */}
+        <SidebarGroup>
+          <p className="px-2 mb-1 text-[11px] font-medium text-muted-foreground/50 uppercase tracking-wider">
+            Решения
+          </p>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {solutionItems.map((item) => {
                 const active = pathname === item.href
                 return (
                   <SidebarMenuItem key={item.label}>
