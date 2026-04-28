@@ -128,24 +128,6 @@ export function SkillConfigDialog({
             </div>
           )}
 
-          {/* Tools */}
-          {skill.tools.length > 0 && (
-            <div className="flex flex-wrap gap-1.5">
-              {skill.tools.map(tool => (
-                <span
-                  key={tool}
-                  className="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-mono border"
-                  style={{
-                    borderColor: `${skill.color}30`,
-                    color: skill.color,
-                    backgroundColor: `${skill.color}0d`,
-                  }}
-                >
-                  {tool}
-                </span>
-              ))}
-            </div>
-          )}
         </div>
 
         {/* Config form */}
