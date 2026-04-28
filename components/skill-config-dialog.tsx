@@ -320,13 +320,8 @@ export function SkillConfigDialog({
 
           {/* ── Right: instructions — absolute so it never affects dialog height ── */}
           <div
-            className="absolute top-0 right-0 bottom-0 overflow-hidden transition-[width] duration-300"
-            style={{
-              width: showInstructions && skill.instructions ? "380px" : "0px",
-              borderLeft: showInstructions && skill.instructions
-                ? "1px solid hsl(var(--border) / 0.4)"
-                : "none",
-            }}
+            className="absolute top-0 right-0 bottom-0 overflow-hidden transition-[width] duration-300 border-l border-border/40"
+            style={{ width: showInstructions && skill.instructions ? "380px" : "0px" }}
           >
             <div className="flex flex-col h-full" style={{ width: "380px" }}>
               <div className="px-5 py-4 border-b border-border/40 shrink-0">
