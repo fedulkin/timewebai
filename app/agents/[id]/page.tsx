@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label"
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet"
 import { useAgents, type AgentSkill } from "@/components/agents-provider"
 import { SkillsShowcase } from "@/components/skills-showcase"
+import { ChatArtifacts } from "@/components/chat-artifacts"
 import { ArrowUp, Settings2, Trash2 } from "lucide-react"
 import { cn } from "@/lib/utils"
 
@@ -128,7 +129,9 @@ export default function AgentChatPage({ params }: { params: Promise<{ id: string
 
   return (
     <AppShell fullHeight mainClassName="p-0 md:p-0 gap-0 md:gap-0 overflow-hidden flex-1 min-h-0">
-      <div className="flex flex-col h-full">
+      <div className="flex h-full min-h-0">
+      {/* ── Chat ── */}
+      <div className="flex flex-col flex-1 min-w-0 min-h-0">
         {/* Chat header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-border/40 shrink-0">
           <div className="flex items-center gap-3">
@@ -247,6 +250,13 @@ export default function AgentChatPage({ params }: { params: Promise<{ id: string
             </Button>
           </div>
         </div>
+      </div>
+
+      {/* ── Artifacts sidebar ── */}
+      {(agent.skills ?? []).length > 0 && (
+        <ChatArtifacts skills={agent.skills ?? []} />
+      )}
+
       </div>
 
       {/* Settings sheet */}
