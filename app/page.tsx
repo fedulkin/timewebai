@@ -349,7 +349,7 @@ export default function DashboardPage() {
   return (
     <AppShell>
         {/* Page header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 animate-in fade-in-0 slide-in-from-bottom-4 duration-300 anim-delay-1">
           <h1 className="text-2xl font-semibold tracking-tight">Дашборд</h1>
           <div className="flex items-center gap-2 overflow-x-auto pb-0.5 -mb-0.5 shrink-0">
             <FilterButton icon={<CalendarDays className="size-3.5" />}>За текущий месяц</FilterButton>
@@ -359,10 +359,12 @@ export default function DashboardPage() {
         </div>
 
         {/* Stats */}
-        <StatsRow />
+        <div className="animate-in fade-in-0 slide-in-from-bottom-4 duration-300 anim-delay-2">
+          <StatsRow />
+        </div>
 
         {/* Feature cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 animate-in fade-in-0 slide-in-from-bottom-4 duration-300 anim-delay-3">
           <FeatureCard icon={Route} title="AI Gateway"
             description="Единый API для работы с 50+ моделями от ведущих провайдеров"
             features={["OpenAI, Antropic, Google, Mistral и другие", "Единый биллинг и лимиты", "Кэширование и балансировка"]}
@@ -375,7 +377,7 @@ export default function DashboardPage() {
         </div>
 
         {/* Bottom row */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 animate-in fade-in-0 slide-in-from-bottom-4 duration-300 anim-delay-4">
           <Card className="bg-background dark:bg-transparent border-border/60 py-0">
             <CardContent className="p-6 flex flex-col gap-4">
               <p className="text-sm font-medium">Расходы по моделям</p>

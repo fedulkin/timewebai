@@ -143,3 +143,24 @@
     }
 }
 
+/* ── Entrance animation for tab content panels ──────────────────────────── */
+/* Radix Tabs unmounts inactive panels, so switching tabs always triggers    */
+/* a fresh mount → this CSS plays automatically without JS.                  */
+[data-slot="tabs-content"] {
+  animation: content-enter 0.22s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes content-enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+/* ── Stagger delay helpers ───────────────────────────────────────────────── */
+/* Used on dashboard sections to cascade in one after another.               */
+.anim-delay-1  { animation-delay:  60ms; }
+.anim-delay-2  { animation-delay: 130ms; }
+.anim-delay-3  { animation-delay: 200ms; }
+.anim-delay-4  { animation-delay: 270ms; }
+

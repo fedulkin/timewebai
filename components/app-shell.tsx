@@ -182,10 +182,14 @@ export function AppShell({ children, mainClassName, fullHeight }: { children: Re
             </DropdownMenu>
           </header>
 
-          <main className={cn(
-            "mx-2 mb-2 md:ml-2 md:mr-6 rounded-[16px] md:rounded-[24px] bg-surface-bg ring-1 ring-white/5 flex flex-col gap-6 md:gap-10 p-4 md:p-10",
-            mainClassName
-          )}>
+          <main
+            key={pathname}
+            className={cn(
+              "mx-2 mb-2 md:ml-2 md:mr-6 rounded-[16px] md:rounded-[24px] bg-surface-bg ring-1 ring-white/5 flex flex-col gap-6 md:gap-10 p-4 md:p-10",
+              "animate-in fade-in-0 slide-in-from-bottom-3 duration-300 ease-out",
+              mainClassName
+            )}
+          >
             {children}
           </main>
         </div>
