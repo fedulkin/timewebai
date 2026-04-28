@@ -43,11 +43,18 @@ function SkillCard({
       onClick={onClick}
     >
       <CardContent className="p-4 flex flex-col gap-3">
-        <div
-          className="size-9 rounded-lg flex items-center justify-center shrink-0"
-          style={{ backgroundColor: `${skill.color}18` }}
-        >
-          <SkillIcon name={skill.icon} className="size-4" style={{ color: skill.color } as React.CSSProperties} />
+        <div className="flex items-start justify-between gap-2">
+          <div
+            className="size-9 rounded-lg flex items-center justify-center shrink-0"
+            style={{ backgroundColor: `${skill.color}18` }}
+          >
+            <SkillIcon name={skill.icon} className="size-4" style={{ color: skill.color } as React.CSSProperties} />
+          </div>
+          {connected && (
+            <span className="inline-flex items-center px-1.5 py-0.5 rounded-md text-[10px] font-medium bg-primary/10 text-primary shrink-0">
+              добавлено
+            </span>
+          )}
         </div>
 
         <div className="flex flex-col gap-0.5">
@@ -72,6 +79,7 @@ interface SkillsShowcaseProps {
 
 export function SkillsShowcase({ selected, onChange }: SkillsShowcaseProps) {
   const [activeCategory, setActiveCategory] = useState<Skill["category"] | "all">("all")
+  const [onlyAdded, setOnlyAdded] = useState(false)
   const [dialogSkill, setDialogSkill] = useState<Skill | null>(null)
   const [dialogOpen, setDialogOpen] = useState(false)
 
@@ -95,19 +103,19 @@ export function SkillsShowcase({ selected, onChange }: SkillsShowcaseProps) {
     onChange(selected.filter(s => s.id !== skillId))
   }
 
-  const filtered = activeCategory === "all"
-    ? SKILLS
-    : SKILLS.filter(s => s.category === activeCategory)
+  const filtered = SKILLS
+    .filter(s => activeCategory === "all" || s.category === activeCategory)
+    .filter(s => !onlyAdded || selectedIds.includes(s.id))
 
   return (
     <div className="flex flex-col gap-4">
-      {/* Category tabs */}
+      {/* Category tabs + added filter */}
       <div className="flex items-center gap-1 flex-wrap">
         <button
-          onClick={() => setActiveCategory("all")}
+          onClick={() => { setActiveCategory("all"); setOnlyAdded(false) }}
           className={cn(
             "px-3 py-1.5 rounded-lg text-xs font-medium transition-colors",
-            activeCategory === "all"
+            activeCategory === "all" && !onlyAdded
               ? "bg-primary/10 text-primary"
               : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
           )}
@@ -117,10 +125,10 @@ export function SkillsShowcase({ selected, onChange }: SkillsShowcaseProps) {
         {CATEGORIES.map(cat => (
           <button
             key={cat}
-            onClick={() => setActiveCategory(cat)}
+            onClick={() => { setActiveCategory(cat); setOnlyAdded(false) }}
             className={cn(
               "px-3 py-1.5 rounded-lg text-xs font-medium transition-colors",
-              activeCategory === cat
+              activeCategory === cat && !onlyAdded
                 ? "bg-primary/10 text-primary"
                 : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
             )}
@@ -128,6 +136,24 @@ export function SkillsShowcase({ selected, onChange }: SkillsShowcaseProps) {
             {CATEGORY_LABELS[cat]}
           </button>
         ))}
+
+        {/* Divider */}
+        {selected.length > 0 && (
+          <>
+            <span className="w-px h-4 bg-border/60 mx-1" />
+            <button
+              onClick={() => { setOnlyAdded(v => !v); setActiveCategory("all") }}
+              className={cn(
+                "px-3 py-1.5 rounded-lg text-xs font-medium transition-colors",
+                onlyAdded
+                  ? "bg-primary/10 text-primary"
+                  : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+              )}
+            >
+              Добавленные · {selected.length}
+            </button>
+          </>
+        )}
       </div>
 
       {/* Grid */}
