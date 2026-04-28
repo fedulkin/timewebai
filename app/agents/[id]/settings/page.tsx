@@ -127,6 +127,14 @@ export default function AgentSettingsPage({ params }: { params: Promise<{ id: st
 
       {/* Actions — sticky bottom bar */}
       <div className="sticky bottom-0 -mx-4 md:-mx-10 -mb-4 md:-mb-10 bg-surface-bg border-t border-white/5 rounded-b-[24px] px-4 md:px-10 pt-4 pb-6 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <Button size="lg" onClick={handleSave} disabled={!name.trim()}>
+            Сохранить
+          </Button>
+          <Button variant="ghost" size="lg" onClick={() => router.push(`/agents/${id}`)} className="text-muted-foreground">
+            Отмена
+          </Button>
+        </div>
         <Button
           variant="ghost"
           size="lg"
@@ -136,14 +144,6 @@ export default function AgentSettingsPage({ params }: { params: Promise<{ id: st
           <Trash2 className="size-4" />
           Удалить агента
         </Button>
-        <div className="flex items-center gap-3">
-          <Button variant="ghost" size="lg" onClick={() => router.push(`/agents/${id}`)} className="text-muted-foreground">
-            Отмена
-          </Button>
-          <Button size="lg" onClick={handleSave} disabled={!name.trim()}>
-            Сохранить
-          </Button>
-        </div>
       </div>
     </AppShell>
   )
