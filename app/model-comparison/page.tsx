@@ -174,7 +174,7 @@ function ModelComparisonContent() {
       </div>
 
       {/* Selectors */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <ModelSelect value={modelA} onChange={setModelA} exclude={modelB} />
         <ModelSelect value={modelB} onChange={setModelB} exclude={modelA} placeholder="Выберите модель для сравнения" />
       </div>

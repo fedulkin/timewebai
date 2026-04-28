@@ -342,7 +342,7 @@ function ChatContent() {
   )
 
   return (
-    <AppShell mainClassName="p-0 gap-0 overflow-hidden flex-1 min-h-0" fullHeight>
+    <AppShell mainClassName="p-0 md:p-0 gap-0 md:gap-0 overflow-hidden flex-1 min-h-0" fullHeight>
       <div className="flex h-full min-h-0">
 
         {/* ── Left panel (desktop) ── */}

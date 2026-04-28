@@ -13,7 +13,8 @@ import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem,
   DropdownMenuSeparator, DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Sheet, SheetContent } from "@/components/ui/sheet"
+import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet"
+import { VisuallyHidden } from "@radix-ui/react-visually-hidden"
 import { Switch } from "@/components/ui/switch"
 import { Input } from "@/components/ui/input"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
@@ -100,7 +101,7 @@ export function AppShell({ children, mainClassName, fullHeight }: { children: Re
 
   return (
     <SidebarProvider defaultOpen>
-      <div className={cn("flex w-full bg-background", fullHeight ? "h-svh overflow-hidden" : "min-h-svh")}>
+      <div className={cn("flex w-full bg-background md:min-w-[1280px]", fullHeight ? "h-svh overflow-hidden" : "min-h-svh")}>
 
         {/* Desktop sidebar */}
         <Sidebar collapsible="none" className="hidden md:flex sticky top-0 h-svh bg-background w-60 shrink-0 self-start">
@@ -113,6 +114,7 @@ export function AppShell({ children, mainClassName, fullHeight }: { children: Re
         {/* Mobile nav sheet */}
         <Sheet open={mobileNavOpen} onOpenChange={setMobileNavOpen}>
           <SheetContent side="left" className="w-64 p-0 bg-background flex flex-col">
+            <VisuallyHidden><SheetTitle>Навигация</SheetTitle></VisuallyHidden>
             <div className="p-6 pb-4">
               <Logo className="h-4 w-auto" />
             </div>
@@ -185,8 +187,8 @@ export function AppShell({ children, mainClassName, fullHeight }: { children: Re
           <main
             key={pathname}
             className={cn(
-              "mx-2 mb-2 md:ml-2 md:mr-6 rounded-[16px] md:rounded-[24px] bg-surface-bg ring-1 ring-white/5 flex flex-col gap-6 md:gap-10 p-4 md:p-10",
-              "animate-in fade-in-0 slide-in-from-bottom-3 duration-300 ease-out",
+              "mx-2 mb-2 md:ml-2 md:mr-6 rounded-[24px] bg-surface-bg ring-1 ring-white/5 flex flex-col gap-10 p-4 md:p-10",
+              "animate-in fade-in-0 duration-200 ease-out",
               mainClassName
             )}
           >
