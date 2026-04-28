@@ -174,10 +174,11 @@ export function SkillConfigDialog({
           maxWidth: "min(860px, 95vw)",
         }}
       >
-        <div className="flex max-h-[85vh]">
+        {/* Outer: height determined solely by left column */}
+        <div className="relative overflow-hidden">
 
           {/* ── Left: config ───────────────────────────────────────────── */}
-          <div className="flex flex-col w-[480px] shrink-0 min-h-0 max-h-[85vh]">
+          <div className="flex flex-col w-[480px]" style={{ maxHeight: "80vh", overflow: "hidden" }}>
 
             {/* Hero header */}
             <div
@@ -232,7 +233,7 @@ export function SkillConfigDialog({
 
             {/* Config form */}
             {skill.fields.length > 0 && (
-              <div className="px-6 py-5 flex flex-col gap-4 border-t border-border/40 flex-1 overflow-y-auto">
+              <div className="px-6 py-5 flex flex-col gap-4 border-t border-border/40 overflow-y-auto" style={{ flex: "1 1 0" }}>
                 <div className="flex items-center justify-between">
                   <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Настройка подключения
@@ -317,12 +318,17 @@ export function SkillConfigDialog({
             </div>
           </div>
 
-          {/* ── Right: instructions ─────────────────────────────────────── */}
-          <div className={cn(
-            "flex flex-col overflow-hidden transition-[width] duration-300 border-border/40",
-            showInstructions && skill.instructions ? "w-[380px] border-l" : "w-0"
-          )}>
-            <div className="w-[380px] flex flex-col h-full">
+          {/* ── Right: instructions — absolute so it never affects dialog height ── */}
+          <div
+            className="absolute top-0 right-0 bottom-0 overflow-hidden transition-[width] duration-300"
+            style={{
+              width: showInstructions && skill.instructions ? "380px" : "0px",
+              borderLeft: showInstructions && skill.instructions
+                ? "1px solid hsl(var(--border) / 0.4)"
+                : "none",
+            }}
+          >
+            <div className="flex flex-col h-full" style={{ width: "380px" }}>
               <div className="px-5 py-4 border-b border-border/40 shrink-0">
                 <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Инструкция</p>
               </div>
