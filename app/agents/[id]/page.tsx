@@ -5,13 +5,9 @@ import { useRouter } from "next/navigation"
 import { AppShell } from "@/components/app-shell"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet"
-import { useAgents, type AgentSkill } from "@/components/agents-provider"
-import { SkillsShowcase } from "@/components/skills-showcase"
+import { useAgents } from "@/components/agents-provider"
 import { ChatArtifacts } from "@/components/chat-artifacts"
-import { ArrowUp, Settings2, Trash2 } from "lucide-react"
+import { ArrowUp, Settings2 } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -42,52 +38,19 @@ function getMockResponse() {
 export default function AgentChatPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params)
   const router  = useRouter()
-  const { getAgent, updateAgent, deleteAgent } = useAgents()
+  const { getAgent } = useAgents()
   const agent = getAgent(id)
 
-  const [messages, setMessages]       = useState<Message[]>([])
-  const [input, setInput]             = useState("")
-  const [isTyping, setIsTyping]       = useState(false)
-  const [settingsOpen, setSettingsOpen] = useState(false)
+  const [messages, setMessages] = useState<Message[]>([])
+  const [input, setInput]       = useState("")
+  const [isTyping, setIsTyping] = useState(false)
 
-  // Editable agent settings (local copy for sheet)
-  const [editName, setEditName]               = useState("")
-  const [editSystemPrompt, setEditSystemPrompt] = useState("")
-  const [editDescription, setEditDescription] = useState("")
-  const [editSkills, setEditSkills]           = useState<AgentSkill[]>([])
-
-  const bottomRef = useRef<HTMLDivElement>(null)
+  const bottomRef   = useRef<HTMLDivElement>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" })
   }, [messages, isTyping])
-
-  function openSettings() {
-    if (!agent) return
-    setEditName(agent.name)
-    setEditSystemPrompt(agent.systemPrompt)
-    setEditDescription(agent.description)
-    setEditSkills(agent.skills ?? [])
-    setSettingsOpen(true)
-  }
-
-  function saveSettings() {
-    if (!agent) return
-    updateAgent(agent.id, {
-      name: editName.trim() || agent.name,
-      systemPrompt: editSystemPrompt,
-      description: editDescription,
-      skills: editSkills,
-    })
-    setSettingsOpen(false)
-  }
-
-  function handleDelete() {
-    if (!agent) return
-    deleteAgent(agent.id)
-    router.push("/")
-  }
 
   function sendMessage() {
     const text = input.trim()
@@ -152,7 +115,7 @@ export default function AgentChatPage({ params }: { params: Promise<{ id: string
             variant="ghost"
             size="icon"
             className="text-muted-foreground hover:text-foreground"
-            onClick={openSettings}
+            onClick={() => router.push(`/agents/${id}/settings`)}
           >
             <Settings2 className="size-4" />
           </Button>
@@ -262,63 +225,6 @@ export default function AgentChatPage({ params }: { params: Promise<{ id: string
         </div>{/* end chat+sidebar row */}
       </div>{/* end outer flex col */}
 
-      {/* Settings sheet */}
-      <Sheet open={settingsOpen} onOpenChange={setSettingsOpen}>
-        <SheetContent side="right" className="w-[420px] p-0 flex flex-col bg-background">
-          <SheetHeader className="px-6 pt-6 pb-4 border-b border-border/40 shrink-0">
-            <SheetTitle className="text-base font-semibold">Настройки агента</SheetTitle>
-          </SheetHeader>
-
-          <div className="flex-1 overflow-y-auto px-6 py-5 flex flex-col gap-5">
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="edit-name">Название</Label>
-              <Input id="edit-name" value={editName} onChange={e => setEditName(e.target.value)} />
-            </div>
-
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="edit-desc">Описание</Label>
-              <Input id="edit-desc" value={editDescription} onChange={e => setEditDescription(e.target.value)} />
-            </div>
-
-            <div className="flex flex-col gap-3">
-              <Label>Умения</Label>
-              <SkillsShowcase selected={editSkills} onChange={setEditSkills} />
-            </div>
-
-            <div className="flex flex-col gap-2 pt-1">
-              <Label htmlFor="edit-prompt" className="text-muted-foreground">
-                Системный промпт
-              </Label>
-              <Textarea
-                id="edit-prompt"
-                value={editSystemPrompt}
-                onChange={e => setEditSystemPrompt(e.target.value)}
-                className="min-h-[120px] resize-none text-sm leading-relaxed"
-              />
-            </div>
-          </div>
-
-          <div className="px-6 py-4 border-t border-border/40 flex items-center justify-between shrink-0">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="gap-2 text-destructive hover:text-destructive hover:bg-destructive/10"
-              onClick={handleDelete}
-            >
-              <Trash2 className="size-3.5" />
-              Удалить агента
-            </Button>
-            <div className="flex items-center gap-2">
-              <Button variant="ghost" size="sm" onClick={() => setSettingsOpen(false)}>
-                Отмена
-              </Button>
-              <Button size="sm" onClick={saveSettings}>
-                Сохранить
-              </Button>
-            </div>
-          </div>
-        </SheetContent>
-      </Sheet>
     </AppShell>
   )
 }
