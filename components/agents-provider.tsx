@@ -36,6 +36,8 @@ export const AGENT_COLORS = [
 ]
 
 const STORAGE_KEY = "tw-agents"
+const STORAGE_VERSION = "2"
+const STORAGE_VERSION_KEY = "tw-agents-version"
 
 const DEFAULT_AGENTS: Agent[] = [
   {
@@ -123,11 +125,18 @@ export function AgentsProvider({ children }: { children: ReactNode }) {
   const [agents, setAgents] = useState<Agent[]>(DEFAULT_AGENTS)
   const [hydrated, setHydrated] = useState(false)
 
-  // Load from localStorage after mount
+  // Load from localStorage after mount, reset if version mismatch
   useEffect(() => {
     try {
-      const stored = localStorage.getItem(STORAGE_KEY)
-      if (stored) setAgents(JSON.parse(stored))
+      const version = localStorage.getItem(STORAGE_VERSION_KEY)
+      if (version === STORAGE_VERSION) {
+        const stored = localStorage.getItem(STORAGE_KEY)
+        if (stored) setAgents(JSON.parse(stored))
+      } else {
+        // Stale data — clear and use defaults
+        localStorage.removeItem(STORAGE_KEY)
+        localStorage.setItem(STORAGE_VERSION_KEY, STORAGE_VERSION)
+      }
     } catch {}
     setHydrated(true)
   }, [])
