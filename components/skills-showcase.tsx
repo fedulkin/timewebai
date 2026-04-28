@@ -1,0 +1,196 @@
+"use client"
+
+import { useState } from "react"
+import { Card, CardContent } from "@/components/ui/card"
+import {
+  Search, Newspaper, Send, Mail, Hash, Database, Table2, Globe,
+  CalendarDays, FileText, GitPullRequest, Code2, Monitor, Check,
+} from "lucide-react"
+import { SKILLS, CATEGORY_LABELS, CATEGORIES, type Skill } from "@/app/agents/skills-data"
+import { SkillConfigDialog } from "@/components/skill-config-dialog"
+import { type AgentSkill } from "@/components/agents-provider"
+import { cn } from "@/lib/utils"
+
+// ─── Icon map ─────────────────────────────────────────────────────────────────
+
+const ICON_MAP: Record<string, React.ElementType> = {
+  Search, Newspaper, Send, Mail, Hash, Database, Table2, Globe,
+  CalendarDays, FileText, GitPullRequest, Code2, Monitor,
+}
+
+function SkillIcon({ name, className, style }: { name: string; className?: string; style?: React.CSSProperties }) {
+  const Icon = ICON_MAP[name]
+  return Icon ? <Icon className={className} style={style} /> : null
+}
+
+// ─── Skill card ───────────────────────────────────────────────────────────────
+
+function SkillCard({
+  skill,
+  connected,
+  onClick,
+}: {
+  skill: Skill
+  connected: boolean
+  onClick: () => void
+}) {
+  return (
+    <Card
+      className={cn(
+        "bg-background dark:bg-transparent border-border/60 py-0 cursor-pointer transition-all",
+        connected && "border-primary/50 bg-primary/3 dark:bg-primary/5"
+      )}
+      onClick={onClick}
+    >
+      <CardContent className="p-4 flex flex-col gap-3">
+        <div className="flex items-start justify-between gap-2">
+          <div
+            className="size-9 rounded-lg flex items-center justify-center shrink-0"
+            style={{ backgroundColor: `${skill.color}18` }}
+          >
+            <SkillIcon name={skill.icon} className="size-4" style={{ color: skill.color } as React.CSSProperties} />
+          </div>
+          <div
+            className={cn(
+              "size-5 rounded-full border-2 flex items-center justify-center transition-all shrink-0 mt-0.5",
+              connected
+                ? "border-primary bg-primary"
+                : "border-border/60 bg-transparent"
+            )}
+          >
+            {connected && <Check className="size-3 text-primary-foreground stroke-[3]" />}
+          </div>
+        </div>
+
+        <div className="flex flex-col gap-0.5">
+          <p className="text-sm font-medium leading-tight">{skill.name}</p>
+          <p className="text-xs text-muted-foreground/70 font-mono">{skill.connector}</p>
+        </div>
+
+        <p className="text-xs text-muted-foreground leading-relaxed">
+          {skill.description}
+        </p>
+      </CardContent>
+    </Card>
+  )
+}
+
+// ─── Skills showcase ──────────────────────────────────────────────────────────
+
+interface SkillsShowcaseProps {
+  selected: AgentSkill[]
+  onChange: (skills: AgentSkill[]) => void
+}
+
+export function SkillsShowcase({ selected, onChange }: SkillsShowcaseProps) {
+  const [activeCategory, setActiveCategory] = useState<Skill["category"] | "all">("all")
+  const [dialogSkill, setDialogSkill] = useState<Skill | null>(null)
+  const [dialogOpen, setDialogOpen] = useState(false)
+
+  const selectedIds = selected.map(s => s.id)
+
+  function openDialog(skill: Skill) {
+    setDialogSkill(skill)
+    setDialogOpen(true)
+  }
+
+  function handleConnect(skillId: string, config: Record<string, string>) {
+    const existing = selected.find(s => s.id === skillId)
+    if (existing) {
+      onChange(selected.map(s => s.id === skillId ? { ...s, config } : s))
+    } else {
+      onChange([...selected, { id: skillId, config }])
+    }
+  }
+
+  function handleDisconnect(skillId: string) {
+    onChange(selected.filter(s => s.id !== skillId))
+  }
+
+  const filtered = activeCategory === "all"
+    ? SKILLS
+    : SKILLS.filter(s => s.category === activeCategory)
+
+  return (
+    <div className="flex flex-col gap-4">
+      {/* Category tabs */}
+      <div className="flex items-center gap-1 flex-wrap">
+        <button
+          onClick={() => setActiveCategory("all")}
+          className={cn(
+            "px-3 py-1.5 rounded-lg text-xs font-medium transition-colors",
+            activeCategory === "all"
+              ? "bg-primary/10 text-primary"
+              : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+          )}
+        >
+          Все
+        </button>
+        {CATEGORIES.map(cat => (
+          <button
+            key={cat}
+            onClick={() => setActiveCategory(cat)}
+            className={cn(
+              "px-3 py-1.5 rounded-lg text-xs font-medium transition-colors",
+              activeCategory === cat
+                ? "bg-primary/10 text-primary"
+                : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+            )}
+          >
+            {CATEGORY_LABELS[cat]}
+          </button>
+        ))}
+      </div>
+
+      {/* Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+        {filtered.map(skill => (
+          <SkillCard
+            key={skill.id}
+            skill={skill}
+            connected={selectedIds.includes(skill.id)}
+            onClick={() => openDialog(skill)}
+          />
+        ))}
+      </div>
+
+      {/* Selected summary */}
+      {selected.length > 0 && (
+        <div className="flex items-center gap-2 flex-wrap pt-1">
+          <span className="text-xs text-muted-foreground shrink-0">Добавлено:</span>
+          {selected.map(({ id }) => {
+            const skill = SKILLS.find(s => s.id === id)
+            if (!skill) return null
+            return (
+              <span
+                key={id}
+                className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium border border-border/60 bg-muted/30 cursor-pointer hover:bg-muted/50 transition-colors"
+                onClick={() => openDialog(skill)}
+              >
+                <SkillIcon name={skill.icon} className="size-3" />
+                {skill.name}
+                <button
+                  onClick={e => { e.stopPropagation(); handleDisconnect(id) }}
+                  className="ml-0.5 text-muted-foreground/50 hover:text-muted-foreground"
+                >
+                  ×
+                </button>
+              </span>
+            )
+          })}
+        </div>
+      )}
+
+      {/* Config dialog */}
+      <SkillConfigDialog
+        skill={dialogSkill}
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+        initialConfig={dialogSkill ? selected.find(s => s.id === dialogSkill.id)?.config : undefined}
+        isConnected={dialogSkill ? selectedIds.includes(dialogSkill.id) : false}
+        onConnect={handleConnect}
+        onDisconnect={handleDisconnect}
+      />
+    </div>
+  )
+}
