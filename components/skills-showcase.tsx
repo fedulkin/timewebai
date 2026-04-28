@@ -4,7 +4,7 @@ import { useState } from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import {
   Search, Newspaper, Send, Mail, Hash, Database, Table2, Globe,
-  CalendarDays, FileText, GitPullRequest, Code2, Monitor, Check,
+  CalendarDays, FileText, GitPullRequest, Code2, Monitor,
 } from "lucide-react"
 import { SKILLS, CATEGORY_LABELS, CATEGORIES, type Skill } from "@/app/agents/skills-data"
 import { SkillConfigDialog } from "@/components/skill-config-dialog"
@@ -43,23 +43,11 @@ function SkillCard({
       onClick={onClick}
     >
       <CardContent className="p-4 flex flex-col gap-3">
-        <div className="flex items-start justify-between gap-2">
-          <div
-            className="size-9 rounded-lg flex items-center justify-center shrink-0"
-            style={{ backgroundColor: `${skill.color}18` }}
-          >
-            <SkillIcon name={skill.icon} className="size-4" style={{ color: skill.color } as React.CSSProperties} />
-          </div>
-          <div
-            className={cn(
-              "size-5 rounded-full border-2 flex items-center justify-center transition-all shrink-0 mt-0.5",
-              connected
-                ? "border-primary bg-primary"
-                : "border-border/60 bg-transparent"
-            )}
-          >
-            {connected && <Check className="size-3 text-primary-foreground stroke-[3]" />}
-          </div>
+        <div
+          className="size-9 rounded-lg flex items-center justify-center shrink-0"
+          style={{ backgroundColor: `${skill.color}18` }}
+        >
+          <SkillIcon name={skill.icon} className="size-4" style={{ color: skill.color } as React.CSSProperties} />
         </div>
 
         <div className="flex flex-col gap-0.5">
