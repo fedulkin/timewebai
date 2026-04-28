@@ -196,11 +196,6 @@ export function ChatArtifacts({ skills }: ChatArtifactsProps) {
 
   return (
     <div className="w-64 shrink-0 border-l border-border/40 flex flex-col min-h-0 overflow-hidden">
-      {/* Header */}
-      <div className="px-4 py-4 border-b border-border/40 shrink-0">
-        <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Артефакты</p>
-      </div>
-
       {/* Sections */}
       <div className="flex-1 overflow-y-auto p-3 flex flex-col gap-2">
         {sections.map(s => (

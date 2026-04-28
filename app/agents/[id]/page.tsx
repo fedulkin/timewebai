@@ -129,10 +129,8 @@ export default function AgentChatPage({ params }: { params: Promise<{ id: string
 
   return (
     <AppShell fullHeight mainClassName="p-0 md:p-0 gap-0 md:gap-0 overflow-hidden flex-1 min-h-0">
-      <div className="flex h-full min-h-0">
-      {/* ── Chat ── */}
-      <div className="flex flex-col flex-1 min-w-0 min-h-0">
-        {/* Chat header */}
+      <div className="flex flex-col h-full min-h-0">
+        {/* Shared header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-border/40 shrink-0">
           <div className="flex items-center gap-3">
             <div
@@ -159,6 +157,11 @@ export default function AgentChatPage({ params }: { params: Promise<{ id: string
             <Settings2 className="size-4" />
           </Button>
         </div>
+
+        {/* Chat + sidebar row */}
+        <div className="flex flex-1 min-h-0">
+        {/* ── Chat ── */}
+        <div className="flex flex-col flex-1 min-w-0 min-h-0">
 
         {/* Messages */}
         <div className="flex-1 overflow-y-auto px-6 py-6 flex flex-col gap-6">
@@ -250,14 +253,14 @@ export default function AgentChatPage({ params }: { params: Promise<{ id: string
             </Button>
           </div>
         </div>
-      </div>
+        </div>{/* end chat column */}
 
-      {/* ── Artifacts sidebar ── */}
-      {(agent.skills ?? []).length > 0 && (
-        <ChatArtifacts skills={agent.skills ?? []} />
-      )}
-
-      </div>
+        {/* ── Artifacts sidebar ── */}
+        {(agent.skills ?? []).length > 0 && (
+          <ChatArtifacts skills={agent.skills ?? []} />
+        )}
+        </div>{/* end chat+sidebar row */}
+      </div>{/* end outer flex col */}
 
       {/* Settings sheet */}
       <Sheet open={settingsOpen} onOpenChange={setSettingsOpen}>
