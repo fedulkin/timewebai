@@ -8,9 +8,8 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { useAgents, AGENT_COLORS, type AgentSkill } from "@/components/agents-provider"
+import { useAgents, type AgentSkill } from "@/components/agents-provider"
 import { SkillsShowcase } from "@/components/skills-showcase"
-import { cn } from "@/lib/utils"
 
 export default function NewAgentPage() {
   const router = useRouter()
@@ -19,7 +18,6 @@ export default function NewAgentPage() {
   const [name, setName]                 = useState("")
   const [description, setDescription]   = useState("")
   const [systemPrompt, setSystemPrompt] = useState("")
-  const [color, setColor]               = useState(AGENT_COLORS[0])
   const [skills, setSkills]             = useState<AgentSkill[]>([])
 
   function handleCreate() {
@@ -29,7 +27,7 @@ export default function NewAgentPage() {
       description: description.trim(),
       model: "openai/gpt-4o",
       systemPrompt,
-      color,
+      color: "#7c3aed",
       skills,
     })
     router.push(`/agents/${agent.id}`)
@@ -45,62 +43,47 @@ export default function NewAgentPage() {
       {/* Main settings */}
       <div className="section-enter anim-delay-1">
         <Card className="bg-background dark:bg-transparent border-border/60 py-0">
-          <CardContent className="p-6 flex flex-col gap-4">
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="agent-name">Название</Label>
-              <Input
-                id="agent-name"
-                placeholder="Например: Ассистент по продажам"
-                value={name}
-                onChange={e => setName(e.target.value)}
-                autoFocus
-              />
-            </div>
-
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="agent-desc">
-                Описание
-                <span className="ml-1.5 text-muted-foreground/50 font-normal">(необязательно)</span>
-              </Label>
-              <Input
-                id="agent-desc"
-                placeholder="Краткое описание назначения агента"
-                value={description}
-                onChange={e => setDescription(e.target.value)}
-              />
-            </div>
-
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="agent-prompt">
-                Системный промпт
-                <span className="ml-1.5 text-muted-foreground/50 font-normal">(необязательно)</span>
-              </Label>
-              <Textarea
-                id="agent-prompt"
-                placeholder="Опишите роль и поведение агента. Например: «Ты опытный маркетолог. Помогаешь создавать рекламные тексты и разрабатывать стратегии продвижения.»"
-                value={systemPrompt}
-                onChange={e => setSystemPrompt(e.target.value)}
-                className="min-h-[100px] resize-none text-sm leading-relaxed"
-              />
-            </div>
-
-            {/* Color picker — one row */}
-            <div className="flex items-center gap-3 pt-1">
-              <Label className="shrink-0 text-muted-foreground">Цвет аватара</Label>
-              <div className="flex items-center gap-2">
-                {AGENT_COLORS.map(c => (
-                  <button
-                    key={c}
-                    onClick={() => setColor(c)}
-                    className={cn(
-                      "size-6 rounded-md transition-all",
-                      color === c
-                        ? "ring-2 ring-offset-2 ring-offset-background scale-110"
-                        : "opacity-60 hover:opacity-100"
-                    )}
-                    style={{ backgroundColor: c }}
+          <CardContent className="p-6">
+            <div className="flex flex-col md:flex-row gap-5">
+              {/* Left: name + description */}
+              <div className="flex flex-col gap-4 flex-1">
+                <div className="flex flex-col gap-2">
+                  <Label htmlFor="agent-name">Название</Label>
+                  <Input
+                    id="agent-name"
+                    placeholder="Например: Ассистент по продажам"
+                    value={name}
+                    onChange={e => setName(e.target.value)}
+                    autoFocus
                   />
-                ))}
+                </div>
+                <div className="flex flex-col gap-2">
+                  <Label htmlFor="agent-desc">
+                    Описание
+                    <span className="ml-1.5 text-muted-foreground/50 font-normal">(необязательно)</span>
+                  </Label>
+                  <Input
+                    id="agent-desc"
+                    placeholder="Краткое описание назначения агента"
+                    value={description}
+                    onChange={e => setDescription(e.target.value)}
+                  />
+                </div>
+              </div>
+
+              {/* Right: system prompt */}
+              <div className="flex flex-col gap-2 flex-1">
+                <Label htmlFor="agent-prompt">
+                  Системный промпт
+                  <span className="ml-1.5 text-muted-foreground/50 font-normal">(необязательно)</span>
+                </Label>
+                <Textarea
+                  id="agent-prompt"
+                  placeholder="Опишите роль и поведение агента. Например: «Ты опытный маркетолог. Помогаешь создавать рекламные тексты и разрабатывать стратегии продвижения.»"
+                  value={systemPrompt}
+                  onChange={e => setSystemPrompt(e.target.value)}
+                  className="flex-1 min-h-[110px] resize-none text-sm leading-relaxed"
+                />
               </div>
             </div>
           </CardContent>
