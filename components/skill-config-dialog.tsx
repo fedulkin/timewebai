@@ -178,7 +178,7 @@ export function SkillConfigDialog({
         <div className="relative overflow-hidden">
 
           {/* ── Left: config ───────────────────────────────────────────── */}
-          <div className="flex flex-col w-[480px]" style={{ maxHeight: "80vh", overflow: "hidden" }}>
+          <div className="flex flex-col w-[480px]">
 
             {/* Hero header */}
             <div
@@ -233,7 +233,7 @@ export function SkillConfigDialog({
 
             {/* Config form */}
             {skill.fields.length > 0 && (
-              <div className="px-6 py-5 flex flex-col gap-4 border-t border-border/40 overflow-y-auto" style={{ flex: "1 1 0" }}>
+              <div className="px-6 py-5 flex flex-col gap-4 border-t border-border/40">
                 <div className="flex items-center justify-between">
                   <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Настройка подключения
