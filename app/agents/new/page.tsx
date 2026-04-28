@@ -34,7 +34,7 @@ export default function NewAgentPage() {
   }
 
   return (
-    <AppShell mainClassName="pb-24">
+    <AppShell>
       <div className="section-enter flex flex-col gap-2">
         <h1 className="text-2xl font-semibold tracking-tight">Новый агент</h1>
         <p className="text-sm text-muted-foreground">Настройте агента — он запомнит свою роль и будет отвечать в соответствии с ней.</p>
@@ -99,8 +99,8 @@ export default function NewAgentPage() {
         <SkillsShowcase selected={skills} onChange={setSkills} />
       </div>
 
-      {/* Actions — fixed bottom bar aligned to main edges */}
-      <div className="fixed bottom-0 left-2 right-2 md:left-[248px] md:right-6 z-40 bg-surface-bg border-t border-white/5 rounded-b-[24px] px-4 md:px-10 pt-4 pb-6 flex items-center gap-3">
+      {/* Actions — sticky bottom bar, in-flow when content is short */}
+      <div className="sticky bottom-0 -mx-4 md:-mx-10 -mb-4 md:-mb-10 bg-surface-bg border-t border-white/5 rounded-b-[24px] px-4 md:px-10 pt-4 pb-6 flex items-center gap-3">
         <Button onClick={handleCreate} disabled={!name.trim()} size="lg">
           Создать агента
         </Button>
