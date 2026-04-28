@@ -45,70 +45,62 @@ export default function NewAgentPage() {
       {/* Main settings */}
       <div className="section-enter anim-delay-1">
         <Card className="bg-background dark:bg-transparent border-border/60 py-0">
-          <CardContent className="p-6 flex flex-col gap-5">
-            <div className="flex flex-col md:flex-row gap-5">
-              {/* Name + description */}
-              <div className="flex flex-col gap-4 flex-1">
-                <div className="flex flex-col gap-2">
-                  <Label htmlFor="agent-name">Название</Label>
-                  <Input
-                    id="agent-name"
-                    placeholder="Например: Ассистент по продажам"
-                    value={name}
-                    onChange={e => setName(e.target.value)}
-                    autoFocus
+          <CardContent className="p-6 flex flex-col gap-4">
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="agent-name">Название</Label>
+              <Input
+                id="agent-name"
+                placeholder="Например: Ассистент по продажам"
+                value={name}
+                onChange={e => setName(e.target.value)}
+                autoFocus
+              />
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="agent-desc">
+                Описание
+                <span className="ml-1.5 text-muted-foreground/50 font-normal">(необязательно)</span>
+              </Label>
+              <Input
+                id="agent-desc"
+                placeholder="Краткое описание назначения агента"
+                value={description}
+                onChange={e => setDescription(e.target.value)}
+              />
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="agent-prompt">
+                Системный промпт
+                <span className="ml-1.5 text-muted-foreground/50 font-normal">(необязательно)</span>
+              </Label>
+              <Textarea
+                id="agent-prompt"
+                placeholder="Опишите роль и поведение агента. Например: «Ты опытный маркетолог. Помогаешь создавать рекламные тексты и разрабатывать стратегии продвижения.»"
+                value={systemPrompt}
+                onChange={e => setSystemPrompt(e.target.value)}
+                className="min-h-[100px] resize-none text-sm leading-relaxed"
+              />
+            </div>
+
+            {/* Color picker — one row */}
+            <div className="flex items-center gap-3 pt-1">
+              <Label className="shrink-0 text-muted-foreground">Цвет аватара</Label>
+              <div className="flex items-center gap-2">
+                {AGENT_COLORS.map(c => (
+                  <button
+                    key={c}
+                    onClick={() => setColor(c)}
+                    className={cn(
+                      "size-6 rounded-md transition-all",
+                      color === c
+                        ? "ring-2 ring-offset-2 ring-offset-background scale-110"
+                        : "opacity-60 hover:opacity-100"
+                    )}
+                    style={{ backgroundColor: c }}
                   />
-                </div>
-
-                <div className="flex flex-col gap-2">
-                  <Label htmlFor="agent-desc">
-                    Описание
-                    <span className="ml-1.5 text-muted-foreground/50 font-normal">(необязательно)</span>
-                  </Label>
-                  <Input
-                    id="agent-desc"
-                    placeholder="Краткое описание назначения агента"
-                    value={description}
-                    onChange={e => setDescription(e.target.value)}
-                  />
-                </div>
-              </div>
-
-              {/* Color + preview */}
-              <div className="flex flex-col gap-4 md:w-56 shrink-0">
-                <div className="flex flex-col gap-2">
-                  <Label>Цвет аватара</Label>
-                  <div className="flex items-center gap-2 flex-wrap">
-                    {AGENT_COLORS.map(c => (
-                      <button
-                        key={c}
-                        onClick={() => setColor(c)}
-                        className={cn(
-                          "size-7 rounded-lg transition-all",
-                          color === c
-                            ? "ring-2 ring-offset-2 ring-offset-background scale-110"
-                            : "opacity-60 hover:opacity-100"
-                        )}
-                        style={{ backgroundColor: c }}
-                      />
-                    ))}
-                  </div>
-                </div>
-
-                {name && (
-                  <div className="flex items-center gap-3 p-3 rounded-xl bg-muted/30 border border-border/40">
-                    <div
-                      className="size-9 rounded-lg flex items-center justify-center shrink-0 font-semibold text-white text-sm"
-                      style={{ backgroundColor: color }}
-                    >
-                      {name.charAt(0).toUpperCase()}
-                    </div>
-                    <div className="flex flex-col gap-0.5 min-w-0">
-                      <p className="text-sm font-medium truncate">{name}</p>
-                      {description && <p className="text-xs text-muted-foreground truncate">{description}</p>}
-                    </div>
-                  </div>
-                )}
+                ))}
               </div>
             </div>
           </CardContent>
@@ -124,23 +116,8 @@ export default function NewAgentPage() {
         <SkillsShowcase selected={skills} onChange={setSkills} />
       </div>
 
-      {/* System prompt — secondary */}
-      <div className="section-enter anim-delay-3 flex flex-col gap-2">
-        <Label htmlFor="agent-prompt" className="text-sm text-muted-foreground">
-          Системный промпт
-          <span className="ml-1.5 font-normal opacity-50">(необязательно)</span>
-        </Label>
-        <Textarea
-          id="agent-prompt"
-          placeholder="Опишите роль и поведение агента. Например: «Ты опытный маркетолог. Помогаешь создавать рекламные тексты и разрабатывать стратегии продвижения.»"
-          value={systemPrompt}
-          onChange={e => setSystemPrompt(e.target.value)}
-          className="min-h-[100px] resize-none text-sm leading-relaxed bg-background dark:bg-transparent"
-        />
-      </div>
-
       {/* Actions */}
-      <div className="section-enter anim-delay-4 flex items-center gap-3">
+      <div className="section-enter anim-delay-3 flex items-center gap-3">
         <Button onClick={handleCreate} disabled={!name.trim()} size="lg">
           Создать агента
         </Button>
