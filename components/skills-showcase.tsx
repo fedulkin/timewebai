@@ -168,33 +168,6 @@ export function SkillsShowcase({ selected, onChange }: SkillsShowcaseProps) {
         ))}
       </div>
 
-      {/* Selected summary */}
-      {selected.length > 0 && (
-        <div className="flex items-center gap-2 flex-wrap pt-1">
-          <span className="text-xs text-muted-foreground shrink-0">Добавлено:</span>
-          {selected.map(({ id }) => {
-            const skill = SKILLS.find(s => s.id === id)
-            if (!skill) return null
-            return (
-              <span
-                key={id}
-                className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium border border-border/60 bg-muted/30 cursor-pointer hover:bg-muted/50 transition-colors"
-                onClick={() => openDialog(skill)}
-              >
-                <SkillIcon name={skill.icon} className="size-3" />
-                {skill.name}
-                <button
-                  onClick={e => { e.stopPropagation(); handleDisconnect(id) }}
-                  className="ml-0.5 text-muted-foreground/50 hover:text-muted-foreground"
-                >
-                  ×
-                </button>
-              </span>
-            )
-          })}
-        </div>
-      )}
-
       {/* Config dialog */}
       <SkillConfigDialog
         skill={dialogSkill}
