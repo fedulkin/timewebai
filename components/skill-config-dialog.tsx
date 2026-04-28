@@ -167,16 +167,11 @@ export function SkillConfigDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent
-        className={cn(
-          "p-0 gap-0 overflow-hidden transition-[max-width] duration-300",
-          showInstructions ? "max-w-[860px]" : "max-w-[480px]"
-        )}
-      >
-        <div className="flex min-h-0">
+      <DialogContent className="max-w-[860px] p-0 gap-0 overflow-hidden">
+        <div className="flex max-h-[85vh]">
 
           {/* ── Left: config ───────────────────────────────────────────── */}
-          <div className="flex flex-col w-[480px] shrink-0 min-h-0">
+          <div className="flex flex-col w-[480px] shrink-0 min-h-0 max-h-[85vh]">
 
             {/* Hero header */}
             <div
@@ -317,16 +312,19 @@ export function SkillConfigDialog({
           </div>
 
           {/* ── Right: instructions ─────────────────────────────────────── */}
-          {showInstructions && skill.instructions && (
-            <div className="flex-1 border-l border-border/40 flex flex-col min-h-0">
+          <div className={cn(
+            "flex flex-col overflow-hidden transition-[width] duration-300 border-border/40",
+            showInstructions && skill.instructions ? "w-[380px] border-l" : "w-0"
+          )}>
+            <div className="w-[380px] flex flex-col h-full">
               <div className="px-5 py-4 border-b border-border/40 shrink-0">
                 <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Инструкция</p>
               </div>
               <div className="flex-1 overflow-y-auto px-5 py-5">
-                <Instructions text={skill.instructions} color={skill.color} />
+                {skill.instructions && <Instructions text={skill.instructions} color={skill.color} />}
               </div>
             </div>
-          )}
+          </div>
 
         </div>
       </DialogContent>
