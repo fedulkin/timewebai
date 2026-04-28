@@ -167,7 +167,13 @@ export function SkillConfigDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-[860px] p-0 gap-0 overflow-hidden">
+      <DialogContent
+        className="p-0 gap-0 overflow-hidden transition-[width] duration-300 ease-in-out"
+        style={{
+          width: showInstructions ? "860px" : "480px",
+          maxWidth: "min(860px, 95vw)",
+        }}
+      >
         <div className="flex max-h-[85vh]">
 
           {/* ── Left: config ───────────────────────────────────────────── */}
