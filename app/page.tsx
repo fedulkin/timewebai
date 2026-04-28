@@ -205,27 +205,24 @@ export default function DashboardPage() {
         <Card className="bg-background dark:bg-transparent border-border/60 py-0">
           <CardContent className="p-6 flex flex-col gap-5">
             <p className="text-sm font-medium">Расходы по агентам</p>
-            <div className="flex items-start gap-5">
-              <DonutChart />
-              <div className="flex flex-col gap-3 flex-1 min-w-0 pt-1">
-                {agentExpenses.map((a) => (
-                  <div key={a.id} className="flex items-center gap-2.5">
-                    <AgentAvatar name={a.name} color={a.color} size="sm" />
-                    <div className="flex flex-col gap-1 flex-1 min-w-0">
-                      <div className="flex items-center justify-between gap-2">
-                        <span className="text-xs text-foreground truncate">{a.name}</span>
-                        <div className="flex items-center gap-2 shrink-0">
-                          <span className="font-mono text-xs text-muted-foreground">{a.amount}</span>
-                          <span className="text-xs text-muted-foreground/50 w-6 text-right">{a.pct}%</span>
-                        </div>
-                      </div>
-                      <div className="h-1 rounded-full bg-white/6 overflow-hidden">
-                        <div className="h-full rounded-full" style={{ width: `${a.pct}%`, backgroundColor: a.color }} />
+            <div className="flex flex-col gap-3">
+              {agentExpenses.map((a) => (
+                <div key={a.id} className="flex items-center gap-2.5">
+                  <AgentAvatar name={a.name} color={a.color} size="sm" />
+                  <div className="flex flex-col gap-1 flex-1 min-w-0">
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="text-xs text-foreground truncate">{a.name}</span>
+                      <div className="flex items-center gap-2 shrink-0">
+                        <span className="font-mono text-xs text-muted-foreground">{a.amount}</span>
+                        <span className="text-xs text-muted-foreground/50 w-6 text-right">{a.pct}%</span>
                       </div>
                     </div>
+                    <div className="h-1 rounded-full bg-white/6 overflow-hidden">
+                      <div className="h-full rounded-full" style={{ width: `${a.pct}%`, backgroundColor: a.color }} />
+                    </div>
                   </div>
-                ))}
-              </div>
+                </div>
+              ))}
             </div>
           </CardContent>
         </Card>

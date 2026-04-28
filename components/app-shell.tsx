@@ -36,14 +36,14 @@ const footerItems = [
 
 // ─── Agent avatar ─────────────────────────────────────────────────────────────
 
-function AgentAvatar({ agent, size = "sm" }: { agent: Agent; size?: "sm" | "md" }) {
+function AgentAvatar({ agent, size = "sm", active = false }: { agent: Agent; size?: "sm" | "md"; active?: boolean }) {
   return (
     <div
       className={cn(
-        "rounded-lg flex items-center justify-center shrink-0 font-semibold text-white",
-        size === "sm" ? "size-6 text-[10px]" : "size-8 text-xs"
+        "rounded-lg flex items-center justify-center shrink-0 font-semibold",
+        size === "sm" ? "size-6 text-[10px]" : "size-8 text-xs",
+        active ? "bg-primary text-primary-foreground" : "bg-muted/60 text-muted-foreground"
       )}
-      style={{ backgroundColor: agent.color }}
     >
       {agent.name.charAt(0).toUpperCase()}
     </div>
@@ -119,14 +119,14 @@ function NavContent({ pathname, onNavigate }: { pathname: string; onNavigate?: (
                         asChild
                         isActive={active}
                         className={cn(
-                          "gap-2.5 rounded-lg text-sm h-8",
+                          "gap-2.5 rounded-lg text-sm h-9 px-1.5",
                           active
                             ? "bg-transparent! text-foreground font-medium"
                             : "text-muted-foreground"
                         )}
                       >
                         <Link href={`/agents/${agent.id}`} onClick={onNavigate}>
-                          <AgentAvatar agent={agent} size="sm" />
+                          <AgentAvatar agent={agent} size="sm" active={active} />
                           <span className="truncate">{agent.name}</span>
                         </Link>
                       </SidebarMenuButton>
