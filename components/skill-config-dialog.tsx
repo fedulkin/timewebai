@@ -94,36 +94,39 @@ export function SkillConfigDialog({
               <DialogTitle className="text-base font-semibold leading-tight">{skill.name}</DialogTitle>
               <p className="text-xs text-muted-foreground font-mono">{skill.connector}</p>
               <p className="text-xs text-muted-foreground/60 mt-0.5">by {skill.author}</p>
-              {(skill.website || skill.docs) && (
-                <div className="flex items-center gap-3 mt-1.5">
-                  {skill.website && (
-                    <a
-                      href={skill.website}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1 text-[11px] text-muted-foreground hover:text-foreground transition-colors"
-                    >
-                      <ExternalLink className="size-3" />
-                      Сайт
-                    </a>
-                  )}
-                  {skill.docs && (
-                    <a
-                      href={skill.docs}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1 text-[11px] text-muted-foreground hover:text-foreground transition-colors"
-                    >
-                      <BookOpen className="size-3" />
-                      Документация
-                    </a>
-                  )}
-                </div>
-              )}
             </div>
           </div>
 
           <p className="text-sm text-muted-foreground leading-relaxed">{skill.longDescription}</p>
+
+          {(skill.website || skill.docs) && (
+            <div className="flex items-center gap-4">
+              {skill.website && (
+                <a
+                  href={skill.website}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 text-xs font-medium transition-opacity hover:opacity-70"
+                  style={{ color: skill.color }}
+                >
+                  <ExternalLink className="size-3.5" />
+                  Сайт
+                </a>
+              )}
+              {skill.docs && (
+                <a
+                  href={skill.docs}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 text-xs font-medium transition-opacity hover:opacity-70"
+                  style={{ color: skill.color }}
+                >
+                  <BookOpen className="size-3.5" />
+                  Документация
+                </a>
+              )}
+            </div>
+          )}
 
           {/* Tools */}
           {skill.tools.length > 0 && (
