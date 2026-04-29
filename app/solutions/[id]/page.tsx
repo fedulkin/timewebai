@@ -156,7 +156,6 @@ function SettingsDialog({
                         </span>
                       )}
                     </div>
-                    <span className="text-xs text-muted-foreground font-mono">{tier.specs}</span>
                   </div>
                   <div className="flex items-center gap-3 shrink-0">
                     <span className="text-sm font-semibold">{tier.price}</span>
@@ -201,7 +200,7 @@ const MOCK_ACTIVITY = [
   { type: "ok",   text: "Запрос обработан",        detail: "POST /api/v1/tasks",   minutes: 7  },
   { type: "ok",   text: "Резервная копия создана", detail: "Снапшот 128 MB",       minutes: 15 },
   { type: "ok",   text: "Запрос обработан",        detail: "GET /api/v1/agents",   minutes: 23 },
-  { type: "warn", text: "Высокая нагрузка CPU",    detail: "82% в течение 30 с",   minutes: 41 },
+  { type: "warn", text: "Высокая нагрузка",         detail: "82% в течение 30 с",   minutes: 41 },
   { type: "ok",   text: "Запрос обработан",        detail: "POST /api/v1/run",     minutes: 58 },
   { type: "ok",   text: "Сервис перезапущен",      detail: "Плановое обновление",  minutes: 90 },
 ]
@@ -330,20 +329,20 @@ export default function SolutionInstancePage({ params }: { params: Promise<{ id:
         {[
           {
             icon: Clock,
-            label: "Аптайм",
+            label: "Время работы",
             value: uptimeStr,
             sub: isRunning ? `С ${deployedDate.toLocaleDateString("ru-RU")}` : "—",
           },
           {
             icon: Cpu,
-            label: "CPU",
+            label: "Нагрузка",
             value: isRunning ? `${cpuPct}%` : "—",
-            sub: solution.specs.split(" / ")[0],
+            sub: isRunning ? "Процессор" : "—",
             bar: isRunning ? cpuPct : undefined,
           },
           {
             icon: MemoryStick,
-            label: "Память",
+            label: "Объем хранения",
             value: isRunning ? `${ramUsed} / ${ramTotal} GB` : "—",
             sub: `${ramPct}% использовано`,
             bar: isRunning ? ramPct : undefined,

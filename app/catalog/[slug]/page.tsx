@@ -134,7 +134,6 @@ function DeployDialog({
                         </span>
                       )}
                     </div>
-                    <span className="text-xs text-muted-foreground font-mono">{tier.specs}</span>
                     <span className="text-xs text-muted-foreground/50">{tier.note}</span>
                   </div>
                   <div className="flex flex-col items-end gap-1 shrink-0">
