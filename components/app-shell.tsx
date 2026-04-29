@@ -242,6 +242,7 @@ function NavContent({ pathname, onNavigate }: { pathname: string; onNavigate?: (
                 {solutions.map(sol => {
                   const catalogEntry = SOLUTIONS.find(s => s.slug === sol.slug)
                   const Icon = catalogEntry?.icon
+                  const color = catalogEntry?.color ?? sol.color
                   const active = pathname === `/solutions/${sol.id}`
                   return (
                     <SidebarMenuItem key={sol.id}>
@@ -256,9 +257,9 @@ function NavContent({ pathname, onNavigate }: { pathname: string; onNavigate?: (
                         <Link href={`/solutions/${sol.id}`} onClick={onNavigate}>
                           <div
                             className="size-6 rounded-lg flex items-center justify-center shrink-0"
-                            style={{ backgroundColor: `${sol.color}18` }}
+                            style={{ backgroundColor: `${color}18` }}
                           >
-                            {Icon && <Icon className="size-3.5" style={{ color: sol.color }} />}
+                            {Icon && <Icon className="size-3.5" style={{ color }} />}
                           </div>
                           <span className="truncate flex-1">{sol.name}</span>
                           <span className={cn(
