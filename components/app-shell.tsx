@@ -31,7 +31,7 @@ import { Separator } from "@/components/ui/separator"
 import { Logo } from "@/components/logo"
 import {
   LayoutDashboard, CreditCard, BookOpen, Search,
-  Settings, LogOut, Sun, Moon, Menu, Plus, Bot, Pin, PinOff, LayoutGrid,
+  Settings, LogOut, Sun, Moon, Menu, Plus, Bot, Pin, PinOff, Package,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useAgents, type Agent } from "@/components/agents-provider"
@@ -217,7 +217,7 @@ function NavContent({ pathname, onNavigate }: { pathname: string; onNavigate?: (
                   )}
                 >
                   <Link href="/catalog" onClick={onNavigate}>
-                    <LayoutGrid className={cn("size-4 shrink-0", pathname.startsWith("/catalog") && "text-primary")} />
+                    <Package className={cn("size-4 shrink-0", pathname.startsWith("/catalog") && "text-primary")} />
                     Каталог решений
                   </Link>
                 </SidebarMenuButton>

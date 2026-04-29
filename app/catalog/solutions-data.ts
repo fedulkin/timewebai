@@ -1,8 +1,10 @@
+import type React from "react"
 import {
   Bot, Zap, MessageSquare, Layers, Share2, BookOpen,
   MessageCircle, Network, Code2, GitBranch,
 } from "lucide-react"
 import type { LucideIcon } from "lucide-react"
+import { OpenClawLogo, N8nLogo, OpenWebUILogo } from "@/components/solution-logos"
 
 export type SolutionFeature = {
   icon: LucideIcon
@@ -24,7 +26,7 @@ export type Solution = {
   category: string
   license: string
   color: string
-  icon: LucideIcon
+  icon: React.ElementType
   features: SolutionFeature[]
   steps: SolutionStep[]
   useCases: string[]
@@ -43,7 +45,7 @@ export const SOLUTIONS: Solution[] = [
     category: "Персональный ИИ",
     license: "MIT",
     color: "#7c3aed",
-    icon: Bot,
+    icon: OpenClawLogo,
     price: "От 1 990 ₽/мес",
     specs: "От 2 vCPU / 4 GB RAM",
     useCases: [
@@ -111,7 +113,7 @@ export const SOLUTIONS: Solution[] = [
     category: "Автоматизация",
     license: "Sustainable Use",
     color: "#f97316",
-    icon: Zap,
+    icon: N8nLogo,
     price: "От 1 990 ₽/мес",
     specs: "От 2 vCPU / 4 GB RAM",
     useCases: [
@@ -179,7 +181,7 @@ export const SOLUTIONS: Solution[] = [
     category: "Чат",
     license: "MIT",
     color: "#0ea5e9",
-    icon: MessageSquare,
+    icon: OpenWebUILogo,
     price: "От 1 990 ₽/мес",
     specs: "От 1 vCPU / 2 GB RAM",
     useCases: [
