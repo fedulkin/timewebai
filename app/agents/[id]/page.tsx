@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { useAgents } from "@/components/agents-provider"
 import { ChatArtifacts } from "@/components/chat-artifacts"
-import { ArrowUp, Settings2, Paperclip, Mic, Copy, Check } from "lucide-react"
+import { ArrowUp, Settings2, Paperclip, Mic, Copy, Check, PanelRight } from "lucide-react"
 import { cn } from "@/lib/utils"
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription,
@@ -88,8 +88,9 @@ export default function AgentChatPage({ params }: { params: Promise<{ id: string
   const { getAgent } = useAgents()
   const agent = getAgent(id)
 
-  const [tgOpen, setTgOpen]     = useState(false)
-  const [copied, setCopied]     = useState(false)
+  const [tgOpen, setTgOpen]         = useState(false)
+  const [copied, setCopied]         = useState(false)
+  const [artifactsOpen, setArtifactsOpen] = useState(false)
   const [messages, setMessages] = useState<Message[]>(() =>
     (MOCK_HISTORIES[id] ?? []).map((m, i) => ({ ...m, id: String(i) }))
   )
@@ -163,6 +164,20 @@ export default function AgentChatPage({ params }: { params: Promise<{ id: string
             </div>
           </div>
           <div className="flex items-center gap-1">
+            {(agent.skills ?? []).length > 0 && (
+              <Button
+                variant="ghost"
+                size="icon"
+                className={cn(
+                  "text-muted-foreground hover:text-foreground",
+                  artifactsOpen && "text-foreground bg-muted/40"
+                )}
+                onClick={() => setArtifactsOpen(v => !v)}
+                title="Активность агента"
+              >
+                <PanelRight className="size-4" />
+              </Button>
+            )}
             <Button
               variant="ghost"
               size="icon"
@@ -184,7 +199,7 @@ export default function AgentChatPage({ params }: { params: Promise<{ id: string
         </div>
 
         {/* Chat + sidebar row */}
-        <div className="flex flex-1 min-h-0 overflow-hidden">
+        <div className="relative flex flex-1 min-h-0 overflow-hidden">
         {/* ── Chat ── */}
         <div className="flex flex-col flex-1 min-w-0 min-h-0">
 
@@ -295,7 +310,11 @@ export default function AgentChatPage({ params }: { params: Promise<{ id: string
 
         {/* ── Artifacts sidebar ── */}
         {(agent.skills ?? []).length > 0 && (
-          <ChatArtifacts skills={agent.skills ?? []} />
+          <ChatArtifacts
+            skills={agent.skills ?? []}
+            open={artifactsOpen}
+            onClose={() => setArtifactsOpen(false)}
+          />
         )}
         </div>{/* end chat+sidebar row */}
       </div>{/* end outer flex col */}

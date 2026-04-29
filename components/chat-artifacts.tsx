@@ -5,7 +5,7 @@ import {
   Search, Newspaper, Send, Mail, Hash, Database, Table2, Globe,
   CalendarDays, FileText, GitPullRequest, Code2, Monitor,
   ExternalLink, FileSpreadsheet, Terminal, Globe2,
-  CheckCircle2, ChevronDown,
+  CheckCircle2, ChevronDown, X,
 } from "lucide-react"
 import { SKILLS } from "@/app/agents/skills-data"
 import { type AgentSkill } from "@/components/agents-provider"
@@ -185,9 +185,11 @@ function ArtifactItem({ artifact, color }: { artifact: Artifact; color: string }
 
 interface ChatArtifactsProps {
   skills: AgentSkill[]
+  open: boolean
+  onClose: () => void
 }
 
-export function ChatArtifacts({ skills }: ChatArtifactsProps) {
+export function ChatArtifacts({ skills, open, onClose }: ChatArtifactsProps) {
   const sections = skills
     .map(s => ({ id: s.id, artifacts: MOCK_ARTIFACTS[s.id] ?? [] }))
     .filter(s => s.artifacts.length > 0)
@@ -195,12 +197,32 @@ export function ChatArtifacts({ skills }: ChatArtifactsProps) {
   if (sections.length === 0) return null
 
   return (
-    <div className="w-64 shrink-0 border-l border-border/40 flex flex-col overflow-hidden h-full">
-      {/* Sections */}
-      <div className="flex-1 overflow-y-auto min-h-0 p-3 flex flex-col gap-2">
-        {sections.map(s => (
-          <SkillSection key={s.id} skillId={s.id} artifacts={s.artifacts} />
-        ))}
+    <div className={cn(
+      // Desktop: always in-flow on the right
+      "md:relative md:flex md:w-64 md:shrink-0 md:border-l md:border-border/40",
+      // Mobile: absolute overlay covering the whole chat area
+      open
+        ? "absolute inset-0 z-20 flex w-full bg-surface-bg"
+        : "hidden",
+    )}>
+      <div className="flex flex-col w-full overflow-hidden h-full">
+        {/* Mobile-only header with close button */}
+        <div className="md:hidden flex items-center justify-between px-4 py-3 border-b border-border/40 shrink-0">
+          <p className="text-sm font-medium">Активность</p>
+          <button
+            onClick={onClose}
+            className="size-7 flex items-center justify-center rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/40 transition-colors"
+          >
+            <X className="size-4" />
+          </button>
+        </div>
+
+        {/* Sections */}
+        <div className="flex-1 overflow-y-auto min-h-0 p-3 flex flex-col gap-2">
+          {sections.map(s => (
+            <SkillSection key={s.id} skillId={s.id} artifacts={s.artifacts} />
+          ))}
+        </div>
       </div>
     </div>
   )

@@ -501,10 +501,15 @@ export default function NewAgentPage() {
             </Button>
           )}
         </div>
-        {step === 2 && (
-          <p className="text-xs text-muted-foreground/50">
-            {skills.length > 0 ? `Подключено умений: ${skills.length}` : "Можно пропустить и подключить позже"}
-          </p>
+        {(step === 1 || step === 2) && (
+          <Button
+            variant="ghost"
+            size="sm"
+            className="text-muted-foreground/50 hover:text-muted-foreground"
+            onClick={() => setStep(s => s + 1)}
+          >
+            Пропустить
+          </Button>
         )}
       </div>
 
