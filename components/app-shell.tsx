@@ -37,6 +37,7 @@ import { cn } from "@/lib/utils"
 import { useAgents, type Agent } from "@/components/agents-provider"
 import { useSolutions } from "@/components/solutions-provider"
 import { SOLUTIONS } from "@/app/catalog/solutions-data"
+import { resolveColor } from "@/lib/solution-color"
 
 // ─── Nav ──────────────────────────────────────────────────────────────────────
 
@@ -126,6 +127,7 @@ function NavContent({ pathname, onNavigate }: { pathname: string; onNavigate?: (
   const { agents } = useAgents()
   const { solutions } = useSolutions()
   const router = useRouter()
+  const { resolvedTheme } = useTheme()
 
   const [pinned, setPinned] = useState<string[]>([])
   const [order, setOrder]   = useState<string[]>([])
@@ -242,7 +244,11 @@ function NavContent({ pathname, onNavigate }: { pathname: string; onNavigate?: (
                 {solutions.map(sol => {
                   const catalogEntry = SOLUTIONS.find(s => s.slug === sol.slug)
                   const Icon = catalogEntry?.icon
-                  const color = catalogEntry?.color ?? sol.color
+                  const color = resolveColor(
+                    catalogEntry?.color ?? sol.color,
+                    catalogEntry?.darkColor,
+                    resolvedTheme === "dark",
+                  )
                   const active = pathname === `/solutions/${sol.id}`
                   return (
                     <SidebarMenuItem key={sol.id}>

@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { ArrowRight } from "lucide-react"
 import { SOLUTIONS, COMING_SOON } from "./solutions-data"
 import { cn } from "@/lib/utils"
+import { useSolutionColor } from "@/lib/solution-color"
 
 // ─── License badge color ──────────────────────────────────────────────────────
 
@@ -20,6 +21,7 @@ function licenseBadgeClass(license: string) {
 
 function SolutionCard({ solution }: { solution: typeof SOLUTIONS[number] }) {
   const Icon = solution.icon
+  const color = useSolutionColor(solution.color, solution.darkColor)
   return (
     <Link
       href={`/catalog/${solution.slug}`}
@@ -29,9 +31,9 @@ function SolutionCard({ solution }: { solution: typeof SOLUTIONS[number] }) {
       <div className="flex items-start justify-between gap-3">
         <div
           className="size-11 rounded-xl flex items-center justify-center shrink-0"
-          style={{ backgroundColor: `${solution.color}18` }}
+          style={{ backgroundColor: `${color}18` }}
         >
-          <Icon className="size-5" style={{ color: solution.color }} />
+          <Icon className="size-5" style={{ color }} />
         </div>
         <Badge variant="secondary" className={cn("text-[11px] shrink-0 mt-0.5", licenseBadgeClass(solution.license))}>
           {solution.license}
@@ -54,7 +56,7 @@ function SolutionCard({ solution }: { solution: typeof SOLUTIONS[number] }) {
         <span className="text-xs text-muted-foreground/60">{solution.price}</span>
         <span
           className="text-xs font-medium flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
-          style={{ color: solution.color }}
+          style={{ color }}
         >
           Подробнее <ArrowRight className="size-3" />
         </span>

@@ -16,6 +16,7 @@ import {
 import { useSolutions, type DeployedStatus } from "@/components/solutions-provider"
 import { SOLUTIONS } from "@/app/catalog/solutions-data"
 import { cn } from "@/lib/utils"
+import { useSolutionColor, contrastText } from "@/lib/solution-color"
 
 // ─── Tiers (same as in deploy dialog) ────────────────────────────────────────
 
@@ -223,6 +224,7 @@ export default function SolutionInstancePage({ params }: { params: Promise<{ id:
 
   const catalogEntry = SOLUTIONS.find(s => s.slug === solution.slug)
   const Icon = catalogEntry?.icon
+  const color = useSolutionColor(catalogEntry?.color ?? solution.color, catalogEntry?.darkColor)
 
   const isDeploying = solution.status === "deploying"
   const isRunning   = solution.status === "running"
@@ -257,9 +259,9 @@ export default function SolutionInstancePage({ params }: { params: Promise<{ id:
           <div className="flex items-center gap-4">
             <div
               className="size-12 rounded-xl flex items-center justify-center shrink-0"
-              style={{ backgroundColor: `${solution.color}18` }}
+              style={{ backgroundColor: `${color}18` }}
             >
-              {Icon && <Icon className="size-6" style={{ color: solution.color }} />}
+              {Icon && <Icon className="size-6" style={{ color }} />}
             </div>
             <div className="flex flex-col gap-1">
               <div className="flex items-center gap-2.5 flex-wrap">
@@ -306,7 +308,7 @@ export default function SolutionInstancePage({ params }: { params: Promise<{ id:
               <Button
                 size="sm"
                 className="gap-2"
-                style={{ backgroundColor: solution.color, color: "#fff" }}
+                style={{ backgroundColor: color, color: contrastText(color) }}
                 onClick={() => restart(id)}
               >
                 <RotateCcw className="size-3.5" />
@@ -360,7 +362,7 @@ export default function SolutionInstancePage({ params }: { params: Promise<{ id:
                 <p className="text-xs text-muted-foreground/60 uppercase tracking-wider font-medium">{m.label}</p>
               </div>
               <p className="text-lg font-semibold leading-none">{m.value}</p>
-              {m.bar !== undefined && <MiniBar value={m.bar} color={solution.color} />}
+              {m.bar !== undefined && <MiniBar value={m.bar} color={color} />}
               <p className="text-xs text-muted-foreground/50">{m.sub}</p>
             </CardContent>
           </Card>
@@ -434,7 +436,7 @@ export default function SolutionInstancePage({ params }: { params: Promise<{ id:
         open={settingsOpen}
         onOpenChange={setSettingsOpen}
         solution={solution}
-        color={solution.color}
+        color={color}
         icon={Icon}
       />
     </AppShell>

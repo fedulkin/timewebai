@@ -26,6 +26,7 @@ export type Solution = {
   category: string
   license: string
   color: string
+  darkColor?: string
   icon: React.ElementType
   features: SolutionFeature[]
   steps: SolutionStep[]
@@ -181,6 +182,7 @@ export const SOLUTIONS: Solution[] = [
     category: "Чат",
     license: "MIT",
     color: "#000000",
+    darkColor: "#ffffff",
     icon: OpenWebUILogo,
     price: "От 1 990 ₽/мес",
     specs: "От 1 vCPU / 2 GB RAM",

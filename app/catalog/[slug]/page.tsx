@@ -13,6 +13,7 @@ import { Label } from "@/components/ui/label"
 import { SOLUTIONS } from "../solutions-data"
 import { useSolutions } from "@/components/solutions-provider"
 import { cn } from "@/lib/utils"
+import { useSolutionColor, contrastText } from "@/lib/solution-color"
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -39,6 +40,7 @@ function DeployDialog({
 }) {
   const router = useRouter()
   const { deploy } = useSolutions()
+  const color = useSolutionColor(solution.color, solution.darkColor)
   const [name, setName]         = useState(solution.name)
   const [tierId, setTierId]     = useState("standard")
   const [step, setStep]         = useState<"pick" | "deploying">("pick")
@@ -80,13 +82,13 @@ function DeployDialog({
         {/* Header */}
         <div
           className="px-6 pt-6 pb-5 flex items-center gap-4"
-          style={{ background: `linear-gradient(135deg, ${solution.color}12 0%, ${solution.color}06 100%)` }}
+          style={{ background: `linear-gradient(135deg, ${color}12 0%, ${color}06 100%)` }}
         >
           <div
             className="size-11 rounded-xl flex items-center justify-center shrink-0"
-            style={{ backgroundColor: `${solution.color}20` }}
+            style={{ backgroundColor: `${color}20` }}
           >
-            <Icon className="size-5" style={{ color: solution.color }} />
+            <Icon className="size-5" style={{ color }} />
           </div>
           <div>
             <DialogTitle className="text-base font-semibold">Развернуть {solution.name}</DialogTitle>
@@ -155,7 +157,7 @@ function DeployDialog({
               <Button
                 size="sm"
                 className="gap-2"
-                style={{ backgroundColor: solution.color, color: "#fff" }}
+                style={{ backgroundColor: color, color: contrastText(color) }}
                 onClick={handleDeploy}
               >
                 Развернуть
@@ -174,7 +176,7 @@ function DeployDialog({
               <div className="h-1.5 rounded-full bg-muted overflow-hidden">
                 <div
                   className="h-full rounded-full transition-all duration-300 ease-out"
-                  style={{ width: `${progress}%`, backgroundColor: solution.color }}
+                  style={{ width: `${progress}%`, backgroundColor: color }}
                 />
               </div>
             </div>
@@ -220,6 +222,7 @@ export default function SolutionPage({ params }: { params: Promise<{ slug: strin
   if (!solution) notFound()
 
   const Icon = solution.icon
+  const color = useSolutionColor(solution.color, solution.darkColor)
 
   return (
     <AppShell>
@@ -237,9 +240,9 @@ export default function SolutionPage({ params }: { params: Promise<{ slug: strin
           <div className="flex items-center gap-5">
             <div
               className="size-16 rounded-2xl flex items-center justify-center shrink-0"
-              style={{ backgroundColor: `${solution.color}18` }}
+              style={{ backgroundColor: `${color}18` }}
             >
-              <Icon className="size-8" style={{ color: solution.color }} />
+              <Icon className="size-8" style={{ color }} />
             </div>
             <div className="flex flex-col gap-1.5">
               <div className="flex items-center gap-2.5 flex-wrap">
@@ -259,7 +262,7 @@ export default function SolutionPage({ params }: { params: Promise<{ slug: strin
             <Button
               size="lg"
               className="gap-2"
-              style={{ backgroundColor: solution.color, color: "#fff" }}
+              style={{ backgroundColor: color, color: contrastText(color) }}
               onClick={() => setDeployOpen(true)}
             >
               Развернуть
@@ -282,7 +285,7 @@ export default function SolutionPage({ params }: { params: Promise<{ slug: strin
           <div className="flex flex-col gap-2 md:min-w-[220px]">
             {solution.useCases.map(u => (
               <div key={u} className="flex items-center gap-2 text-sm text-muted-foreground">
-                <Check className="size-3.5 shrink-0" style={{ color: solution.color }} />
+                <Check className="size-3.5 shrink-0" style={{ color }} />
                 {u}
               </div>
             ))}
@@ -301,9 +304,9 @@ export default function SolutionPage({ params }: { params: Promise<{ slug: strin
                 <CardContent className="p-5 flex flex-col gap-3">
                   <div
                     className="size-9 rounded-lg flex items-center justify-center"
-                    style={{ backgroundColor: `${solution.color}15` }}
+                    style={{ backgroundColor: `${color}15` }}
                   >
-                    <FIcon className="size-4" style={{ color: solution.color }} />
+                    <FIcon className="size-4" style={{ color }} />
                   </div>
                   <div className="flex flex-col gap-1">
                     <p className="text-sm font-medium">{f.title}</p>
@@ -325,7 +328,7 @@ export default function SolutionPage({ params }: { params: Promise<{ slug: strin
               <CardContent className="p-5 flex flex-col gap-3">
                 <span
                   className="font-mono text-3xl font-bold leading-none"
-                  style={{ color: `${solution.color}30` }}
+                  style={{ color: `${color}30` }}
                 >
                   {s.number}
                 </span>
@@ -357,7 +360,7 @@ export default function SolutionPage({ params }: { params: Promise<{ slug: strin
               <Button
                 size="lg"
                 className="gap-2"
-                style={{ backgroundColor: solution.color, color: "#fff" }}
+                style={{ backgroundColor: color, color: contrastText(color) }}
                 onClick={() => setDeployOpen(true)}
               >
                 Развернуть сейчас
