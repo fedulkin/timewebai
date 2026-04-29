@@ -7,8 +7,21 @@ import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { useAgents } from "@/components/agents-provider"
 import { ChatArtifacts } from "@/components/chat-artifacts"
-import { ArrowUp, Settings2 } from "lucide-react"
+import { ArrowUp, Settings2, Paperclip, Mic, Copy, Check } from "lucide-react"
 import { cn } from "@/lib/utils"
+import {
+  Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription,
+} from "@/components/ui/dialog"
+
+// ─── Telegram icon ────────────────────────────────────────────────────────────
+
+function TelegramIcon({ className, style }: { className?: string; style?: React.CSSProperties }) {
+  return (
+    <svg className={className} style={style} viewBox="0 0 24 24" fill="currentColor">
+      <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
+    </svg>
+  )
+}
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -75,6 +88,8 @@ export default function AgentChatPage({ params }: { params: Promise<{ id: string
   const { getAgent } = useAgents()
   const agent = getAgent(id)
 
+  const [tgOpen, setTgOpen]     = useState(false)
+  const [copied, setCopied]     = useState(false)
   const [messages, setMessages] = useState<Message[]>(() =>
     (MOCK_HISTORIES[id] ?? []).map((m, i) => ({ ...m, id: String(i) }))
   )
@@ -147,18 +162,29 @@ export default function AgentChatPage({ params }: { params: Promise<{ id: string
               )}
             </div>
           </div>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="text-muted-foreground hover:text-foreground"
-            onClick={() => router.push(`/agents/${id}/settings`)}
-          >
-            <Settings2 className="size-4" />
-          </Button>
+          <div className="flex items-center gap-1">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="text-muted-foreground hover:text-foreground"
+              onClick={() => setTgOpen(true)}
+              title="Подключить Telegram"
+            >
+              <TelegramIcon className="size-4" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="text-muted-foreground hover:text-foreground"
+              onClick={() => router.push(`/agents/${id}/settings`)}
+            >
+              <Settings2 className="size-4" />
+            </Button>
+          </div>
         </div>
 
         {/* Chat + sidebar row */}
-        <div className="flex flex-1 min-h-0">
+        <div className="flex flex-1 min-h-0 overflow-hidden">
         {/* ── Chat ── */}
         <div className="flex flex-col flex-1 min-w-0 min-h-0">
 
@@ -199,7 +225,7 @@ export default function AgentChatPage({ params }: { params: Promise<{ id: string
                   "max-w-[70%] rounded-2xl px-4 py-3 text-sm leading-relaxed whitespace-pre-wrap",
                   msg.role === "user"
                     ? "bg-primary text-primary-foreground rounded-tr-sm"
-                    : "bg-muted/60 text-foreground rounded-tl-sm"
+                    : "bg-background text-foreground rounded-tl-sm border border-border/60"
                 )}
               >
                 {msg.content}
@@ -215,7 +241,7 @@ export default function AgentChatPage({ params }: { params: Promise<{ id: string
               >
                 {agent.name.charAt(0).toUpperCase()}
               </div>
-              <div className="bg-muted/60 rounded-2xl rounded-tl-sm px-4 py-3 flex items-center gap-1.5">
+              <div className="bg-background border border-border/60 rounded-2xl rounded-tl-sm px-4 py-3 flex items-center gap-1.5">
                 {[0, 1, 2].map(i => (
                   <span
                     key={i}
@@ -232,7 +258,12 @@ export default function AgentChatPage({ params }: { params: Promise<{ id: string
 
         {/* Input */}
         <div className="px-6 pb-6 pt-2 shrink-0">
-          <div className="relative flex items-end gap-2 rounded-2xl border border-border/60 bg-background px-4 py-3 focus-within:border-border transition-colors">
+          <div className="flex items-center gap-2 border border-border/60 bg-background px-3 py-3 focus-within:border-border transition-colors" style={{ borderRadius: 20 }}>
+            {/* Attach */}
+            <button className="shrink-0 size-8 flex items-center justify-center rounded-full text-muted-foreground/50 hover:text-muted-foreground transition-colors">
+              <Paperclip className="size-4" />
+            </button>
+
             <Textarea
               ref={textareaRef}
               value={input}
@@ -242,14 +273,22 @@ export default function AgentChatPage({ params }: { params: Promise<{ id: string
               className="flex-1 border-0 bg-transparent p-0 text-sm resize-none min-h-[24px] max-h-[200px] focus-visible:ring-0 shadow-none leading-relaxed"
               rows={1}
             />
-            <Button
-              size="icon"
-              className="size-8 shrink-0 rounded-lg"
-              disabled={!input.trim() || isTyping}
-              onClick={sendMessage}
-            >
-              <ArrowUp className="size-4" />
-            </Button>
+
+            {/* Voice / Send */}
+            {input.trim() ? (
+              <Button
+                size="icon"
+                className="size-8 shrink-0 rounded-full"
+                disabled={isTyping}
+                onClick={sendMessage}
+              >
+                <ArrowUp className="size-4" />
+              </Button>
+            ) : (
+              <button className="shrink-0 size-8 flex items-center justify-center rounded-full text-muted-foreground/50 hover:text-muted-foreground transition-colors">
+                <Mic className="size-4" />
+              </button>
+            )}
           </div>
         </div>
         </div>{/* end chat column */}
@@ -260,6 +299,63 @@ export default function AgentChatPage({ params }: { params: Promise<{ id: string
         )}
         </div>{/* end chat+sidebar row */}
       </div>{/* end outer flex col */}
+
+      {/* Telegram integration dialog */}
+      <Dialog open={tgOpen} onOpenChange={setTgOpen}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <div className="flex items-center gap-3 mb-1">
+              <div className="size-10 rounded-xl flex items-center justify-center shrink-0" style={{ backgroundColor: "#229ED918" }}>
+                <TelegramIcon className="size-5" style={{ color: "#229ED9" } as React.CSSProperties} />
+              </div>
+              <div>
+                <DialogTitle>Подключить Telegram</DialogTitle>
+                <DialogDescription className="mt-0.5">Общайтесь с агентом прямо в мессенджере</DialogDescription>
+              </div>
+            </div>
+          </DialogHeader>
+
+          <div className="flex flex-col gap-4 pt-1">
+            <div className="flex flex-col gap-2">
+              <p className="text-sm text-muted-foreground">Перейдите в бот и начните диалог — агент ответит так же, как здесь.</p>
+            </div>
+
+            {/* Bot link */}
+            <a
+              href={`https://t.me/timeweb_${id}_bot`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-3 rounded-xl border border-border/60 bg-muted/30 px-4 py-3 hover:bg-muted/50 transition-colors group"
+            >
+              <TelegramIcon className="size-4 shrink-0" style={{ color: "#229ED9" } as React.CSSProperties} />
+              <span className="text-sm font-mono flex-1 text-foreground">@timeweb_{id}_bot</span>
+              <span className="text-xs text-muted-foreground/50 group-hover:text-muted-foreground transition-colors">Открыть →</span>
+            </a>
+
+            {/* Token */}
+            <div className="flex flex-col gap-1.5">
+              <p className="text-xs text-muted-foreground/60 font-medium uppercase tracking-wider">Токен агента</p>
+              <div className="flex items-center gap-2 rounded-xl border border-border/60 bg-muted/30 px-4 py-3">
+                <span className="text-xs font-mono text-muted-foreground flex-1 truncate">twai_{id}_{'x'.repeat(24)}</span>
+                <button
+                  onClick={() => {
+                    navigator.clipboard.writeText(`twai_${id}_${'x'.repeat(24)}`)
+                    setCopied(true)
+                    setTimeout(() => setCopied(false), 2000)
+                  }}
+                  className="shrink-0 text-muted-foreground/40 hover:text-muted-foreground transition-colors"
+                >
+                  {copied ? <Check className="size-3.5 text-emerald-500" /> : <Copy className="size-3.5" />}
+                </button>
+              </div>
+            </div>
+
+            <p className="text-xs text-muted-foreground/50 leading-relaxed">
+              Бот автоматически привязан к этому агенту. Все сообщения из Telegram появятся в журнале активности.
+            </p>
+          </div>
+        </DialogContent>
+      </Dialog>
 
     </AppShell>
   )

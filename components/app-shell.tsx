@@ -81,7 +81,7 @@ function NavContent({ pathname, onNavigate }: { pathname: string; onNavigate?: (
                 >
                   <Link href="/" onClick={onNavigate}>
                     <LayoutDashboard className={cn("size-4 shrink-0", pathname === "/" && "text-primary")} />
-                    Дашборд
+                    Сводка
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>

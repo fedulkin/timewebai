@@ -102,7 +102,7 @@ function SkillSection({ skillId, artifacts }: { skillId: string; artifacts: Arti
   if (!skill) return null
 
   return (
-    <div className="border border-border/50 rounded-xl overflow-hidden">
+    <div className="border border-border/50 rounded-xl overflow-hidden shrink-0 bg-background dark:bg-transparent">
       {/* Header */}
       <button
         onClick={() => setOpen(v => !v)}
@@ -195,9 +195,9 @@ export function ChatArtifacts({ skills }: ChatArtifactsProps) {
   if (sections.length === 0) return null
 
   return (
-    <div className="w-64 shrink-0 border-l border-border/40 flex flex-col min-h-0 overflow-hidden">
+    <div className="w-64 shrink-0 border-l border-border/40 flex flex-col overflow-hidden h-full">
       {/* Sections */}
-      <div className="flex-1 overflow-y-auto p-3 flex flex-col gap-2">
+      <div className="flex-1 overflow-y-auto min-h-0 p-3 flex flex-col gap-2">
         {sections.map(s => (
           <SkillSection key={s.id} skillId={s.id} artifacts={s.artifacts} />
         ))}
