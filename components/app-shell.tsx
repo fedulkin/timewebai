@@ -1,9 +1,18 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect, useRef } from "react"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { useTheme } from "next-themes"
+import {
+  DndContext, closestCenter, PointerSensor, useSensor, useSensors,
+  type DragEndEvent,
+} from "@dnd-kit/core"
+import {
+  SortableContext, verticalListSortingStrategy,
+  useSortable, arrayMove,
+} from "@dnd-kit/sortable"
+import { CSS } from "@dnd-kit/utilities"
 import {
   Sidebar, SidebarContent, SidebarFooter, SidebarGroup,
   SidebarGroupContent, SidebarHeader, SidebarMenu,
@@ -22,7 +31,7 @@ import { Separator } from "@/components/ui/separator"
 import { Logo } from "@/components/logo"
 import {
   LayoutDashboard, CreditCard, BookOpen, Search,
-  Settings, LogOut, Sun, Moon, Menu, Plus, Bot,
+  Settings, LogOut, Sun, Moon, Menu, Plus, Bot, Pin, PinOff,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useAgents, type Agent } from "@/components/agents-provider"
@@ -50,16 +59,121 @@ function AgentAvatar({ agent, size = "sm", active = false }: { agent: Agent; siz
   )
 }
 
+// ─── Sortable agent item ──────────────────────────────────────────────────────
+
+function SortableAgentItem({
+  agent, active, isPinned, showDivider, onPin, onNavigate, draggedId,
+}: {
+  agent: Agent
+  active: boolean
+  isPinned: boolean
+  showDivider: boolean
+  onPin: (id: string, e: React.MouseEvent) => void
+  onNavigate?: () => void
+  draggedId: React.MutableRefObject<string | null>
+}) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: agent.id })
+  const router = useRouter()
+
+  function handleClick() {
+    if (draggedId.current === agent.id) return
+    onNavigate?.()
+    router.push(`/agents/${agent.id}`)
+  }
+
+  return (
+    <>
+      {showDivider && <div className="my-1 border-t border-border/40" />}
+      <SidebarMenuItem
+        ref={setNodeRef}
+        style={{ transform: CSS.Transform.toString(transform), transition, opacity: isDragging ? 0.4 : 1 }}
+      >
+        <SidebarMenuButton
+          isActive={active}
+          className={cn(
+            "gap-2.5 rounded-lg text-sm h-9 px-1.5 group/item cursor-grab active:cursor-grabbing",
+            active ? "bg-transparent! text-foreground font-medium" : "text-muted-foreground"
+          )}
+          onClick={handleClick}
+          {...attributes}
+          {...listeners}
+        >
+          <AgentAvatar agent={agent} size="sm" active={active} />
+          <span className="truncate flex-1">{agent.name}</span>
+          <button
+            onClick={(e) => { e.stopPropagation(); onPin(agent.id, e) }}
+            className={cn(
+              "shrink-0 transition-all",
+              isPinned ? "opacity-40 hover:opacity-100" : "opacity-0 group-hover/item:opacity-40 hover:!opacity-100"
+            )}
+          >
+            {isPinned ? <PinOff className="size-3" /> : <Pin className="size-3" />}
+          </button>
+        </SidebarMenuButton>
+      </SidebarMenuItem>
+    </>
+  )
+}
+
 // ─── Nav content ──────────────────────────────────────────────────────────────
 
 function NavContent({ pathname, onNavigate }: { pathname: string; onNavigate?: () => void }) {
   const { agents } = useAgents()
   const router = useRouter()
 
+  const [pinned, setPinned] = useState<string[]>([])
+  const [order, setOrder]   = useState<string[]>([])
+
+  useEffect(() => {
+    try { setPinned(JSON.parse(localStorage.getItem("tw-pinned-agents") ?? "[]")) } catch {}
+    try { setOrder(JSON.parse(localStorage.getItem("tw-agents-order") ?? "[]")) } catch {}
+  }, [])
+
+  const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 6 } }))
+  const draggedId = useRef<string | null>(null)
+
+  function togglePin(id: string, e: React.MouseEvent) {
+    e.preventDefault()
+    e.stopPropagation()
+    setPinned(prev => {
+      const next = prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]
+      localStorage.setItem("tw-pinned-agents", JSON.stringify(next))
+      return next
+    })
+  }
+
+  function handleDragStart(event: { active: { id: string | number } }) {
+    draggedId.current = String(event.active.id)
+  }
+
+  function handleDragEnd(event: DragEndEvent) {
+    setTimeout(() => { draggedId.current = null }, 100)
+    const { active, over } = event
+    if (!over || active.id === over.id) return
+    const sorted = sortedAgents
+    const oldIdx = sorted.findIndex(a => a.id === active.id)
+    const newIdx = sorted.findIndex(a => a.id === over.id)
+    const next = arrayMove(sorted, oldIdx, newIdx).map(a => a.id)
+    setOrder(next)
+    localStorage.setItem("tw-agents-order", JSON.stringify(next))
+  }
+
   function handleCreate() {
     onNavigate?.()
     router.push("/agents/new")
   }
+
+  // Apply custom order, then split pinned/unpinned
+  const sortedAgents = [...agents].sort((a, b) => {
+    const ai = order.indexOf(a.id), bi = order.indexOf(b.id)
+    if (ai === -1 && bi === -1) return 0
+    if (ai === -1) return 1
+    if (bi === -1) return -1
+    return ai - bi
+  })
+  const pinnedAgents   = sortedAgents.filter(a => pinned.includes(a.id))
+  const unpinnedAgents = sortedAgents.filter(a => !pinned.includes(a.id))
+  const allSorted      = [...pinnedAgents, ...unpinnedAgents]
 
   return (
     <>
@@ -91,49 +205,48 @@ function NavContent({ pathname, onNavigate }: { pathname: string; onNavigate?: (
 
         {/* Agents */}
         <SidebarGroup className="flex-1 pb-0">
-          <div className="flex items-center justify-between px-2 mb-1">
+          <div className="px-2 mb-1">
             <span className="text-[11px] font-medium text-muted-foreground/50 uppercase tracking-wider">
               Агенты
             </span>
-            <button
-              onClick={handleCreate}
-              className="size-5 flex items-center justify-center rounded text-muted-foreground/50 hover:text-foreground hover:bg-muted/60 transition-colors"
-              title="Создать агента"
-            >
-              <Plus className="size-3.5" />
-            </button>
           </div>
 
           <SidebarGroupContent>
             <SidebarMenu>
-              {agents.length === 0 ? (
-                <div className="px-2 py-3 text-xs text-muted-foreground/50 text-center">
-                  Нет агентов
-                </div>
-              ) : (
-                agents.map((agent) => {
-                  const active = pathname === `/agents/${agent.id}`
-                  return (
-                    <SidebarMenuItem key={agent.id}>
-                      <SidebarMenuButton
-                        asChild
-                        isActive={active}
-                        className={cn(
-                          "gap-2.5 rounded-lg text-sm h-9 px-1.5",
-                          active
-                            ? "bg-transparent! text-foreground font-medium"
-                            : "text-muted-foreground"
-                        )}
-                      >
-                        <Link href={`/agents/${agent.id}`} onClick={onNavigate}>
-                          <AgentAvatar agent={agent} size="sm" active={active} />
-                          <span className="truncate">{agent.name}</span>
-                        </Link>
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
-                  )
-                })
-              )}
+              {/* Create button */}
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  onClick={handleCreate}
+                  className="gap-2.5 rounded-lg text-sm h-9 px-1.5 text-muted-foreground/60 hover:text-foreground border border-dashed border-border/60 hover:border-border mb-1"
+                >
+                  <div className="size-6 rounded-lg flex items-center justify-center shrink-0">
+                    <Plus className="size-3.5" />
+                  </div>
+                  <span>Новый агент</span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+
+              <DndContext id="agents-dnd" sensors={sensors} collisionDetection={closestCenter} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
+                <SortableContext items={allSorted.map(a => a.id)} strategy={verticalListSortingStrategy}>
+                  {allSorted.map((a, i) => {
+                    const showDivider = pinnedAgents.length > 0 && unpinnedAgents.length > 0 && i === pinnedAgents.length
+                    const active = pathname === `/agents/${a.id}`
+                    const isPinned = pinned.includes(a.id)
+                    return (
+                      <SortableAgentItem
+                        key={a.id}
+                        agent={a}
+                        active={active}
+                        isPinned={isPinned}
+                        showDivider={showDivider}
+                        onPin={togglePin}
+                        onNavigate={onNavigate}
+                        draggedId={draggedId}
+                      />
+                    )
+                  })}
+                </SortableContext>
+              </DndContext>
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
@@ -262,7 +375,7 @@ export function AppShell({ children, mainClassName, fullHeight }: {
             key={pathname}
             className={cn(
               "mx-2 mb-2 md:ml-2 md:mr-6 rounded-[24px] bg-surface-bg ring-1 ring-white/5 flex flex-col gap-10 p-4 md:p-10",
-              "animate-in fade-in-0 duration-200 ease-out",
+              "page-enter",
               mainClassName
             )}
           >

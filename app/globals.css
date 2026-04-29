@@ -155,6 +155,17 @@
   }
 }
 
+/* ── Page transition ─────────────────────────────────────────────────────── */
+.page-enter {
+  animation: page-enter 0.18s ease-out both;
+}
+
+@keyframes page-enter {
+  from {
+    opacity: 0;
+  }
+}
+
 /* ── Dashboard section stagger ───────────────────────────────────────────── */
 /* Each section fades + rises independently, cascading in sequence.           */
 .section-enter {
