@@ -31,10 +31,12 @@ import { Separator } from "@/components/ui/separator"
 import { Logo } from "@/components/logo"
 import {
   LayoutDashboard, CreditCard, BookOpen, Search,
-  Settings, LogOut, Sun, Moon, Menu, Plus, Bot, Pin, PinOff,
+  Settings, LogOut, Sun, Moon, Menu, Plus, Bot, Pin, PinOff, LayoutGrid,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useAgents, type Agent } from "@/components/agents-provider"
+import { useSolutions } from "@/components/solutions-provider"
+import { SOLUTIONS } from "@/app/catalog/solutions-data"
 
 // ─── Nav ──────────────────────────────────────────────────────────────────────
 
@@ -100,15 +102,18 @@ function SortableAgentItem({
         >
           <AgentAvatar agent={agent} size="sm" active={active} />
           <span className="truncate flex-1">{agent.name}</span>
-          <button
+          <span
+            role="button"
+            tabIndex={0}
             onClick={(e) => { e.stopPropagation(); onPin(agent.id, e) }}
+            onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.stopPropagation(); onPin(agent.id, e as unknown as React.MouseEvent) } }}
             className={cn(
               "shrink-0 transition-all",
               isPinned ? "opacity-40 hover:opacity-100" : "opacity-0 group-hover/item:opacity-40 hover:!opacity-100"
             )}
           >
             {isPinned ? <PinOff className="size-3" /> : <Pin className="size-3" />}
-          </button>
+          </span>
         </SidebarMenuButton>
       </SidebarMenuItem>
     </>
@@ -119,6 +124,7 @@ function SortableAgentItem({
 
 function NavContent({ pathname, onNavigate }: { pathname: string; onNavigate?: () => void }) {
   const { agents } = useAgents()
+  const { solutions } = useSolutions()
   const router = useRouter()
 
   const [pinned, setPinned] = useState<string[]>([])
@@ -178,7 +184,7 @@ function NavContent({ pathname, onNavigate }: { pathname: string; onNavigate?: (
   return (
     <>
       <SidebarContent className="px-2 flex flex-col gap-1">
-        {/* Dashboard */}
+        {/* Dashboard + Catalog */}
         <SidebarGroup className="pb-0">
           <SidebarGroupContent>
             <SidebarMenu>
@@ -199,9 +205,77 @@ function NavContent({ pathname, onNavigate }: { pathname: string; onNavigate?: (
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  asChild
+                  isActive={pathname.startsWith("/catalog")}
+                  className={cn(
+                    "gap-3 rounded-lg text-sm",
+                    pathname.startsWith("/catalog")
+                      ? "bg-transparent! text-foreground font-medium"
+                      : "text-muted-foreground"
+                  )}
+                >
+                  <Link href="/catalog" onClick={onNavigate}>
+                    <LayoutGrid className={cn("size-4 shrink-0", pathname.startsWith("/catalog") && "text-primary")} />
+                    Каталог решений
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
+
+        {/* Solutions */}
+        {solutions.length > 0 && (
+          <SidebarGroup className="pb-0">
+            <div className="px-2 mb-1 flex items-center justify-between">
+              <span className="text-[11px] font-medium text-muted-foreground/50 uppercase tracking-wider">
+                Решения
+              </span>
+              <Link href="/catalog" onClick={onNavigate} className="text-muted-foreground/40 hover:text-muted-foreground transition-colors">
+                <Plus className="size-3" />
+              </Link>
+            </div>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {solutions.map(sol => {
+                  const catalogEntry = SOLUTIONS.find(s => s.slug === sol.slug)
+                  const Icon = catalogEntry?.icon
+                  const active = pathname === `/solutions/${sol.id}`
+                  return (
+                    <SidebarMenuItem key={sol.id}>
+                      <SidebarMenuButton
+                        asChild
+                        isActive={active}
+                        className={cn(
+                          "gap-2.5 rounded-lg text-sm h-9 px-1.5",
+                          active ? "bg-transparent! text-foreground font-medium" : "text-muted-foreground"
+                        )}
+                      >
+                        <Link href={`/solutions/${sol.id}`} onClick={onNavigate}>
+                          <div
+                            className="size-6 rounded-lg flex items-center justify-center shrink-0"
+                            style={{ backgroundColor: `${sol.color}18` }}
+                          >
+                            {Icon && <Icon className="size-3.5" style={{ color: sol.color }} />}
+                          </div>
+                          <span className="truncate flex-1">{sol.name}</span>
+                          <span className={cn(
+                            "size-1.5 rounded-full shrink-0",
+                            sol.status === "running"   && "bg-emerald-500",
+                            sol.status === "deploying" && "bg-amber-400 animate-pulse",
+                            sol.status === "stopped"   && "bg-muted-foreground/30",
+                          )} />
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  )
+                })}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        )}
 
         {/* Agents */}
         <SidebarGroup className="flex-1 pb-0">

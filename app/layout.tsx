@@ -4,6 +4,7 @@ import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
 import { TooltipProvider } from "@/components/ui/tooltip"
 import { AgentsProvider } from "@/components/agents-provider"
+import { SolutionsProvider } from "@/components/solutions-provider"
 import { cn } from "@/lib/utils"
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" })
@@ -30,7 +31,7 @@ export default function RootLayout({
           style={{ width: 1600, height: 200, top: -100, right: -800, background: "#7107E7", opacity: 0.15, zIndex: 9999 }}
         />
         <ThemeProvider defaultTheme="dark" enableSystem={false}>
-          <TooltipProvider><AgentsProvider>{children}</AgentsProvider></TooltipProvider>
+          <TooltipProvider><AgentsProvider><SolutionsProvider>{children}</SolutionsProvider></AgentsProvider></TooltipProvider>
         </ThemeProvider>
       </body>
     </html>
